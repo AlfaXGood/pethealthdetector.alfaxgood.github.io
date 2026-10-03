@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>🐥 Цыпа-Дозор — Трекер привычек и осанки</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         html, body {
@@ -15,44 +14,28 @@
             overflow-x: hidden;
             width: 100%;
         }
-        .bg-card-dark {
-            background-color: #111827 !important;
-        }
-        .hud-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: auto;
-            cursor: crosshair;
-        }
+        .bg-card-dark { background-color: #111827 !important; }
+        #chick3d-container { touch-action: none; user-select: none; }
+        .hud-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; cursor: crosshair; }
         .countdown-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 64px;
-            font-weight: 900;
-            color: #facc15;
+            font-size: 64px; font-weight: 900; color: #facc15;
             text-shadow: 0 0 20px rgba(250, 204, 21, 0.8);
-            pointer-events: none;
-            z-index: 20;
+            pointer-events: none; z-index: 20;
         }
-        /* Адаптивные шрифты и кнопки под телефон */
         @media (max-width: 576px) {
-            .btn-mode { font-size: 11px; padding: 4px 8px; }
-            .badge-stat { font-size: 10px; padding: 3px 6px; }
-            .scene-box { min-height: 280px !important; }
+            .btn-mode { font-size: 11px; padding: 4px 6px; }
+            .badge-stat { font-size: 10px; padding: 3px 5px; }
+            .scene-box { height: 290px !important; }
         }
     </style>
 </head>
 <body class="py-2">
 
 <div class="container-fluid px-2" style="max-width: 960px;">
-    <!-- Верхняя панель: Адаптированная под мобильный телефон -->
+    <!-- Верхняя панель -->
     <div class="card bg-card-dark border-secondary p-2.5 mb-2 shadow-sm">
-        <!-- Ряд 1: Маскот, Уровень, Зёрна и Настройки -->
         <div class="d-flex justify-content-between align-items-center mb-2">
             <div class="d-flex align-items-center gap-2">
                 <span class="fs-4">🐥</span>
@@ -67,16 +50,17 @@
 
             <div class="d-flex align-items-center gap-1.5">
                 <div class="d-flex align-items-center bg-black px-2 py-1 rounded border border-secondary text-warning small fw-bold">
-                    <span>🌽</span>
+                    <span>🌾</span>
                     <span id="grainCount" class="ms-1">0</span>
                     <button id="feedChickBtn" class="btn btn-warning btn-sm py-0 px-1.5 ms-1 fw-bold" style="font-size: 10px;">Кормить</button>
-                    <button class="btn btn-outline-warning btn-sm py-0 px-1.5 ms-1" style="font-size: 10px;" data-bs-toggle="modal" data-bs-target="#wardrobeModal">🧢</button>
+                    <button class="btn btn-outline-warning btn-sm py-0 px-1.5 ms-1" style="font-size: 10px;" data-bs-toggle="modal" data-bs-target="#wardrobeModal">🧢 Скины</button>
                 </div>
+                <button class="btn btn-outline-info btn-sm p-1 text-info" data-bs-toggle="modal" data-bs-target="#duelModal" title="Совместный дозор с другом">👥</button>
                 <button class="btn btn-outline-secondary btn-sm p-1 text-light" data-bs-toggle="modal" data-bs-target="#settingsModal">⚙️</button>
             </div>
         </div>
 
-        <!-- Ряд 2: Переключатели режимов детекции -->
+        <!-- Кнопки режимов -->
         <div class="d-flex flex-wrap gap-1 mb-2">
             <div class="btn-group btn-group-sm w-100 bg-black p-1 rounded border border-secondary" role="group">
                 <input type="checkbox" class="btn-check" id="checkFace" checked autocomplete="off">
@@ -89,15 +73,15 @@
                 <label class="btn btn-outline-warning btn-mode flex-fill text-nowrap" for="checkPosture">🧍 Осанка</label>
 
                 <input type="checkbox" class="btn-check" id="checkJitter" checked autocomplete="off">
-                <label class="btn btn-outline-warning btn-mode flex-fill text-nowrap" for="checkJitter" title="Детектор дрожания ног/рук">🦵 Дрожь</label>
+                <label class="btn btn-outline-warning btn-mode flex-fill text-nowrap" for="checkJitter" title="Детектор нервной дрожи">🦵 Дрожь</label>
 
-                <button type="button" id="calibratePostureBtn" class="btn btn-warning fw-bold btn-mode text-dark text-nowrap" title="Калибровка с таймером 3 секунды">
+                <button type="button" id="calibratePostureBtn" class="btn btn-warning fw-bold btn-mode text-dark text-nowrap" title="Калибровка с таймером 3с">
                     📐 3с
                 </button>
             </div>
         </div>
 
-        <!-- Ряд 3: Счётчики, Стрик и Карточка Сторис -->
+        <!-- Счётчики -->
         <div class="d-flex justify-content-between align-items-center pt-1 border-top border-secondary small">
             <div class="d-flex align-items-center gap-1.5">
                 <span id="preventedBadge" class="badge bg-black text-info border border-info font-monospace badge-stat">
@@ -106,8 +90,8 @@
                 <span id="fireStreakBadge" class="badge bg-black text-danger border border-danger font-monospace badge-stat">
                     🔥 1 дн.
                 </span>
-                <span id="jitterBadge" class="badge bg-black text-warning border border-secondary font-monospace badge-stat d-none">
-                    🦵 Спокойно
+                <span id="jitterAlertBadge" class="badge bg-warning text-dark font-monospace badge-stat d-none">
+                    🦵 Дрожь! Вдох 🧘
                 </span>
             </div>
 
@@ -123,7 +107,7 @@
         </div>
     </div>
 
-    <!-- Основная сцена: 3D Цыпа + Камера -->
+    <!-- Основная сцена -->
     <div class="row g-2">
         <!-- 3D Цыплёнок -->
         <div class="col-12 col-md-6">
@@ -131,7 +115,7 @@
                 <div id="chick3d-container" class="w-100 h-100" style="cursor: grab;"></div>
 
                 <div class="position-absolute top-0 start-0 m-2 badge bg-black bg-opacity-75 text-secondary border border-secondary" style="font-size: 10px;">
-                    👆 Вращай | Клик — погладить
+                    👆 Вращай пальцем | Клик — ласка
                 </div>
 
                 <div id="heartOverlay" class="position-absolute top-50 start-50 translate-middle pointer-events-none d-none text-danger fs-1">
@@ -146,7 +130,7 @@
             </div>
         </div>
 
-        <!-- Окно веб-камеры с оверлеем рук, осанки и ранки -->
+        <!-- Окно веб-камеры -->
         <div class="col-12 col-md-6">
             <div class="card bg-card-dark border-secondary p-2.5 shadow-sm d-flex flex-column justify-content-between">
                 <div>
@@ -158,18 +142,15 @@
                         </div>
                     </div>
 
-                    <!-- Видео + Canvas для рисования скелета рук, ранки и осанки -->
                     <div class="position-relative bg-black rounded overflow-hidden mb-1.5" style="aspect-ratio: 4/3;">
                         <video id="webcamVideo" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1);"></video>
-                        <!-- Холст HUD-графики -->
                         <canvas id="hudCanvas" class="hud-overlay"></canvas>
-                        <!-- Обратный отсчёт калибровки -->
                         <div id="countdownBox" class="countdown-overlay d-none">3</div>
                     </div>
 
                     <div class="d-flex justify-content-between text-secondary mb-1" style="font-size: 10px;">
-                        <span>Фиксация руки: <span id="dwellSeconds">0.0с / 1.2с</span></span>
-                        <span class="text-warning">Клик по видео: задать ранку 🎯</span>
+                        <span>Фиксация: <span id="dwellSeconds">0.0с / 1.2с</span></span>
+                        <span class="text-warning">Клик по лицу: метка ранки 🎯</span>
                     </div>
                     <div class="progress bg-secondary mb-2" style="height: 5px;">
                         <div id="dwellProgress" class="progress-bar bg-warning" role="progressbar" style="width: 0%;"></div>
@@ -181,7 +162,7 @@
                         🎥 Запустить дозор
                     </button>
                     <button id="testAlarmBtn" class="btn btn-outline-secondary btn-sm text-light py-1" style="font-size: 11px;">
-                        Проверить реакцию цыпы (Тест)
+                        Проверить звук и демо-уведомление (Безопасно)
                     </button>
                 </div>
             </div>
@@ -189,35 +170,101 @@
     </div>
 </div>
 
-<!-- Модалка TikTok / Stories -->
-<div class="modal fade" id="tiktokShareModal" tabindex="-1" aria-hidden="true">
+<!-- Модалка совместного дозора с другом (Дуэль) -->
+<div class="modal fade" id="duelModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark text-light border border-danger shadow-lg" style="background-color: #0d1117 !important;">
+        <div class="modal-content bg-card-dark text-light border border-info shadow-lg">
             <div class="modal-header border-secondary py-2">
-                <h6 class="modal-title text-danger fw-bold">🔥 Карточка для TikTok / Stories</h6>
+                <h6 class="modal-title text-info fw-bold">👥 Совместный дозор с другом</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body text-center p-3">
-                <div class="p-3 rounded-4 border border-warning mx-auto shadow-lg"
-                     style="max-width: 260px; background: linear-gradient(145deg, #161b22, #0b0f17);">
-                    <div class="fs-1 mb-1">🐥</div>
-                    <div class="fw-bold text-warning fs-6 text-uppercase">Цыпа-Дозор</div>
-                    <small class="text-secondary d-block mb-2" style="font-size: 11px;">Самоконтроль и осанка</small>
-
-                    <div class="py-1.5 px-2 bg-black rounded border border-secondary mb-2">
-                        <div class="text-danger fs-4 fw-bold font-monospace" id="shareFireText">🔥 1 ДЕНЬ</div>
-                        <div class="text-secondary" style="font-size: 9px;">ОГОНЁК ДЕРЖИТСЯ!</div>
+            <div class="modal-body p-3">
+                <p class="small text-secondary mb-2">Держите стрик вместе! Чтобы не греть телефон видеосвязью, цыплята синхронизируют стрики, тревоги и жизни в реальном времени.</p>
+                <div class="p-2.5 bg-black rounded border border-secondary mb-3 text-center">
+                    <div class="small text-secondary mb-1">Ссылка для подключения друга:</div>
+                    <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary text-center font-monospace" id="roomLinkInput" readonly value="https://pethealthdetector.alfaxgood.com/#room=chick-777">
+                    <button class="btn btn-outline-info btn-sm mt-2 fw-bold" onclick="navigator.clipboard.writeText(document.getElementById('roomLinkInput').value); alert('Ссылка скопирована! Отправьте её другу.');">📋 Скопировать ссылку</button>
+                </div>
+                <div class="d-flex justify-content-around p-2 bg-dark rounded border border-secondary text-center">
+                    <div>
+                        <div class="fw-bold text-warning small">Вы</div>
+                        <div class="fs-4">🐥</div>
+                        <div class="small text-success">00:00 (❤️❤️❤️)</div>
                     </div>
-
-                    <div class="text-success fs-3 fw-bold font-monospace mb-0.5" id="shareStreakText">00:00</div>
-                    <div class="text-secondary small mb-2" style="font-size: 10px;">ЧИСТОГО ВРЕМЕНИ</div>
-                    <div class="badge bg-warning text-dark font-monospace" style="font-size: 10px;">100% Самоконтроль</div>
+                    <div class="border-end border-secondary"></div>
+                    <div>
+                        <div class="fw-bold text-info small">Друг (Ожидание...)</div>
+                        <div class="fs-4 opacity-50">🐣</div>
+                        <div class="small text-secondary">Подключение...</div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer border-secondary justify-content-center py-2">
-                <button class="btn btn-danger fw-bold btn-sm px-3" onclick="navigator.clipboard.writeText('Мой цыпа в ударе! Держу чистый стрик в Цыпа-Дозор 🔥🐥'); alert('Текст скопирован!');">
-                    📋 Скопировать для сторис
-                </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка настроек -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-card-dark text-light border border-secondary shadow-lg">
+            <div class="modal-header border-secondary py-2">
+                <h6 class="modal-title text-warning fw-bold">⚙️ Настройки режимов и производительности</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="p-2 mb-2.5 bg-black rounded border border-secondary">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="windowsNotifCheck" checked>
+                        <label class="form-check-label small text-warning fw-bold" for="windowsNotifCheck">
+                            🔔 Всплывающие уведомления Windows
+                        </label>
+                    </div>
+                    <small class="text-secondary d-block mt-0.5" style="font-size: 10px;">Включите, чтобы видеть подсказки поверх любых программ.</small>
+                </div>
+
+                <div class="mb-2.5">
+                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                        <span>Мягкость осанки (порог сутулости):</span>
+                        <span id="postureSensValue">0.16 (Мягкая)</span>
+                    </div>
+                    <input type="range" class="form-range" id="postureSensRange" min="0.10" max="0.25" step="0.02" value="0.16">
+                </div>
+
+                <div class="mb-2.5">
+                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                        <span>Чувствительность дрожи:</span>
+                        <span id="jitterSensValue">Средняя</span>
+                    </div>
+                    <input type="range" class="form-range" id="jitterSensRange" min="3" max="8" step="1" value="5">
+                </div>
+
+                <div class="mb-2.5">
+                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                        <span>Громкость звука:</span>
+                        <span id="volumeValue">80%</span>
+                    </div>
+                    <input type="range" class="form-range" id="volumeRange" min="0" max="100" value="80">
+                </div>
+
+                <div class="mb-2.5">
+                    <div class="d-flex justify-content-between small text-secondary mb-1">
+                        <span>Задержка тревоги:</span>
+                        <span id="dwellValue">1.2 сек</span>
+                    </div>
+                    <input type="range" class="form-range" id="dwellRange" min="0.8" max="2.6" step="0.2" value="1.2">
+                </div>
+
+                <div class="p-2 bg-black rounded border border-secondary">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="ecoFpsCheck" checked>
+                        <label class="form-check-label small text-warning fw-bold" for="ecoFpsCheck">
+                            ⚡ Игровой режим: 8 FPS (Экономия батареи и CPU на 80%)
+                        </label>
+                    </div>
+                    <small class="text-secondary d-block mt-1" style="font-size: 10px;">
+                        Идеально для игр и телефонов: нейросеть анализирует 8 кадров/сек, не нагревая устройство и не вызывая лагов.
+                    </small>
+                </div>
             </div>
         </div>
     </div>
@@ -232,20 +279,21 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-3">
+                <small class="text-secondary d-block mb-2">Зарабатывай пшеницу 🌾 за чистый стрик и примеряй скины!</small>
                 <div class="list-group bg-transparent">
                     <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2">
                         <div>
                             <div class="fw-bold small">🕶️ Очки Thug Life</div>
-                            <small class="text-secondary" style="font-size: 11px;">Крутые черные очки</small>
+                            <small class="text-secondary" style="font-size: 11px;">Черные стильные очки</small>
                         </div>
-                        <button id="buyGlassesBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">2 🌽 Надеть</button>
+                        <button id="toggleGlassesBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">2 🌾 Купить</button>
                     </div>
                     <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2 mt-1.5">
                         <div>
-                            <div class="fw-bold small">👑 Корона Царя</div>
-                            <small class="text-secondary" style="font-size: 11px;">Золотая царская корона</small>
+                            <div class="fw-bold small">👑 Царская Корона</div>
+                            <small class="text-secondary" style="font-size: 11px;">Золотая корона с рубинами</small>
                         </div>
-                        <button id="buyCrownBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">4 🌽 Надеть</button>
+                        <button id="toggleCrownBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">4 🌾 Купить</button>
                     </div>
                 </div>
             </div>
@@ -253,42 +301,37 @@
     </div>
 </div>
 
-<!-- Модалка настроек -->
-<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
+<!-- Модалка Сторис -->
+<div class="modal fade" id="tiktokShareModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-card-dark text-light border border-secondary shadow-lg">
+        <div class="modal-content bg-dark text-light border border-danger shadow-lg" style="background-color: #0d1117 !important;">
             <div class="modal-header border-secondary py-2">
-                <h6 class="modal-title text-warning fw-bold">⚙️ Настройки</h6>
+                <h6 class="modal-title text-danger fw-bold">🔥 Карточка для TikTok / Stories</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-3">
-                <div class="mb-2.5">
-                    <label class="form-label text-warning small fw-bold">Громкость звука:</label>
-                    <div class="d-flex align-items-center gap-2">
-                        <input type="range" class="form-range" id="volumeRange" min="0" max="100" value="80">
-                        <span id="volumeValue" class="small text-secondary">80%</span>
-                        <button id="testSoundBtn" class="btn btn-outline-warning btn-sm py-0 px-2">Тест</button>
+            <div class="modal-body text-center p-3">
+                <div class="p-3 rounded-4 border border-warning mx-auto shadow-lg" style="max-width: 260px; background: linear-gradient(145deg, #161b22, #0b0f17);">
+                    <div class="fs-1 mb-1">🐥</div>
+                    <div class="fw-bold text-warning fs-6 text-uppercase">Цыпа-Дозор</div>
+                    <small class="text-secondary d-block mb-2" style="font-size: 11px;">Самоконтроль и осанка</small>
+                    <div class="py-1.5 px-2 bg-black rounded border border-secondary mb-2">
+                        <div class="text-danger fs-4 fw-bold font-monospace" id="shareFireText">🔥 1 ДЕНЬ</div>
+                        <div class="text-secondary" style="font-size: 9px;">ОГОНЁК ДЕРЖИТСЯ!</div>
                     </div>
+                    <div class="text-success fs-3 fw-bold font-monospace mb-0.5" id="shareStreakText">00:00</div>
+                    <div class="text-secondary small mb-2" style="font-size: 10px;">ЧИСТОГО ВРЕМЕНИ</div>
+                    <div class="badge bg-warning text-dark font-monospace" style="font-size: 10px;">100% Самоконтроль</div>
                 </div>
-                <div class="mb-2.5">
-                    <label class="form-label text-warning small fw-bold">Задержка тревоги:</label>
-                    <input type="range" class="form-range" id="dwellRange" min="0.8" max="2.6" step="0.2" value="1.2">
-                    <span id="dwellValue" class="small text-secondary">1.2 сек</span>
-                </div>
-                <div class="p-2 bg-black rounded border border-secondary">
-                    <div class="form-check form-switch mb-0">
-                        <input class="form-check-input" type="checkbox" id="ecoFpsCheck" checked>
-                        <label class="form-check-label small text-warning fw-bold" for="ecoFpsCheck">
-                            ⚡ Игровой режим: 8 FPS (Экономия батареи)
-                        </label>
-                    </div>
-                </div>
+            </div>
+            <div class="modal-footer border-secondary justify-content-center py-2">
+                <button class="btn btn-danger fw-bold btn-sm px-3" onclick="navigator.clipboard.writeText('Мой цыпа в ударе! Держу чистый стрик в Цыпа-Дозор 🔥🐥'); alert('Текст скопирован!');">
+                    📋 Скопировать для сторис
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CDN-библиотеки -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -301,6 +344,9 @@
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let currentVolume = parseFloat(localStorage.getItem('pet_volume') || '0.8');
     let dwellThresholdSeconds = parseFloat(localStorage.getItem('pet_dwell_time') || '1.2');
+    let postureSensitivity = parseFloat(localStorage.getItem('pet_posture_sens') || '0.16');
+    let jitterThreshold = parseInt(localStorage.getItem('pet_jitter_thresh') || '5', 10);
+    let enableWindowsNotifs = localStorage.getItem('pet_enable_notifs') !== 'false';
 
     function playCustomSound(alertType = 'pet') {
         let soundFile = 'audio/pet.mp3';
@@ -320,9 +366,22 @@
         masterGain.gain.setValueAtTime(currentVolume * 0.45, now);
         masterGain.connect(audioCtx.destination);
 
+        if (alertType === 'jitter') {
+            // Мягкий водяной дзен-тон при дрожи
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+            masterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.connect(masterGain);
+            osc.start(now);
+            osc.stop(now + 0.4);
+            return;
+        }
+
         if (alertType === 'beep') {
             const osc = audioCtx.createOscillator();
-            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.setValueAtTime(880, now);
             osc.connect(masterGain);
             osc.start(now);
             osc.stop(now + 0.08);
@@ -366,7 +425,7 @@
         }
     }
 
-    // --- 2. 3D СЦЕНА THREE.JS ---
+    // --- 2. 3D СЦЕНА THREE.JS: ГНЕЗДО, РОМАШКИ, СВЕТЛЯЧКИ И АВТО-КАЛИБРОВКА BLENDER МОДЕЛЕЙ ---
     const container = document.getElementById('chick3d-container');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f172a);
@@ -392,28 +451,21 @@
     worldGroup.position.y = 0.40;
     scene.add(worldGroup);
 
-    const grassMesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(1.65, 1.85, 0.28, 32),
-        new THREE.MeshToonMaterial({ color: 0x16a34a })
-    );
+    // Травка и гнездо
+    const grassMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.65, 1.85, 0.28, 32), new THREE.MeshToonMaterial({ color: 0x16a34a }));
     grassMesh.position.y = -0.14;
     worldGroup.add(grassMesh);
 
-    const nestMesh = new THREE.Mesh(
-        new THREE.TorusGeometry(0.72, 0.22, 14, 32),
-        new THREE.MeshToonMaterial({ color: 0xb45309 })
-    );
+    const nestMesh = new THREE.Mesh(new THREE.TorusGeometry(0.72, 0.22, 14, 32), new THREE.MeshToonMaterial({ color: 0xb45309 }));
     nestMesh.rotation.x = Math.PI / 2;
     nestMesh.position.y = 0.05;
     worldGroup.add(nestMesh);
 
-    const strawInside = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.62, 0.62, 0.08, 16),
-        new THREE.MeshToonMaterial({ color: 0xd97706 })
-    );
+    const strawInside = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.08, 16), new THREE.MeshToonMaterial({ color: 0xd97706 }));
     strawInside.position.y = 0.03;
     worldGroup.add(strawInside);
 
+    // Ромашки
     function createFlower(x, z, scale = 1) {
         const flowerGroup = new THREE.Group();
         flowerGroup.position.set(x, 0.01, z);
@@ -433,6 +485,7 @@
     createFlower(-1.15, 0.35, 0.9);
     createFlower(0.85, -0.65, 0.85);
 
+    // Светлячки
     const fireflyCount = 28;
     const fireflyGeo = new THREE.BufferGeometry();
     const fireflyPos = new Float32Array(fireflyCount * 3);
@@ -452,8 +505,45 @@
     placeholderMesh.position.y = 0.45;
     chickGroup.add(placeholderMesh);
 
+    // АКСЕССУАРЫ
+    const accessoriesGroup = new THREE.Group();
+    chickGroup.add(accessoriesGroup);
+
+    // Вспомогательная функция авто-подгонки любой Blender-модели
+    function autoFitModel(object, targetWidth, targetY, targetZ = 0) {
+        const bbox = new THREE.Box3().setFromObject(object);
+        const size = bbox.getSize(new THREE.Vector3());
+        const center = bbox.getCenter(new THREE.Vector3());
+        const scale = targetWidth / (Math.max(size.x, size.y, size.z) || 1);
+        object.scale.set(scale, scale, scale);
+        object.position.set(-center.x * scale, targetY - (center.y - size.y / 2) * scale, targetZ - center.z * scale);
+        return object;
+    }
+
+    // Резервные процедурные очки и корона
+    let glassesNode = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.12, 0.06), new THREE.MeshBasicMaterial({ color: 0x0a0a0a }));
+    glassesNode.position.set(0, 0.62, 0.40);
+    glassesNode.visible = localStorage.getItem('pet_has_glasses') === 'true';
+    accessoriesGroup.add(glassesNode);
+
+    let crownNode = new THREE.Group();
+    const crownBase = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.12, 16), new THREE.MeshToonMaterial({ color: 0xf59e0b }));
+    crownNode.add(crownBase);
+    for (let i = 0; i < 5; i++) {
+        const spike = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.14, 4), new THREE.MeshToonMaterial({ color: 0xfbbf24 }));
+        const ang = (i * Math.PI * 2) / 5;
+        spike.position.set(Math.sin(ang) * 0.22, 0.12, Math.cos(ang) * 0.22);
+        crownNode.add(spike);
+    }
+    crownNode.position.set(0, 0.88, 0);
+    crownNode.visible = localStorage.getItem('pet_has_crown') === 'true';
+    accessoriesGroup.add(crownNode);
+
+    // Загрузка chick.glb + АВТОМАТИЧЕСКАЯ ПОДГОНКА CROWN.GLB И GLASSES.GLB ИЗ BLENDER
     if (typeof THREE.GLTFLoader === 'function') {
         const gltfLoader = new THREE.GLTFLoader();
+
+        // 1. Цыплёнок
         gltfLoader.load('chick.glb', (gltf) => {
             const model = gltf.scene;
             const bbox = new THREE.Box3().setFromObject(model);
@@ -463,18 +553,44 @@
             model.position.set(0, 0.08, 0);
             chickGroup.add(model);
             placeholderMesh.visible = false;
-        }, undefined, (e) => console.warn('chick.glb fallback:', e));
+        });
+
+        // 2. Корона из Blender (crown.glb)
+        gltfLoader.load('crown.glb', (gltf) => {
+            accessoriesGroup.remove(crownNode);
+            crownNode = gltf.scene;
+            autoFitModel(crownNode, 0.48, 0.86, 0); // автоматически подгоняет размер под голову!
+            crownNode.visible = localStorage.getItem('pet_has_crown') === 'true';
+            accessoriesGroup.add(crownNode);
+            console.log('✅ crown.glb успешно откалиброван и надет!');
+        }, undefined, () => {});
+
+        // 3. Очки из Blender (glasses.glb)
+        gltfLoader.load('glasses.glb', (gltf) => {
+            accessoriesGroup.remove(glassesNode);
+            glassesNode = gltf.scene;
+            autoFitModel(glassesNode, 0.54, 0.60, 0.38); // автоматически сажает очки на клюв!
+            glassesNode.visible = localStorage.getItem('pet_has_glasses') === 'true';
+            accessoriesGroup.add(glassesNode);
+            console.log('✅ glasses.glb успешно откалиброван и надет!');
+        }, undefined, () => {});
     }
 
-    // Вращение мышкой / пальцем на телефоне
+    // Вращение пальцем и мышкой
     let isDragging = false, prevPointerX = 0, dragDistance = 0;
-    container.addEventListener('pointerdown', (e) => { isDragging = true; prevPointerX = e.clientX; dragDistance = 0; });
-    window.addEventListener('pointerup', () => { isDragging = false; });
-    window.addEventListener('pointermove', (e) => {
+    container.addEventListener('pointerdown', (e) => {
+        isDragging = true; prevPointerX = e.clientX; dragDistance = 0;
+        container.setPointerCapture(e.pointerId);
+    });
+    container.addEventListener('pointerup', (e) => {
+        isDragging = false;
+        try { container.releasePointerCapture(e.pointerId); } catch(err){}
+    });
+    container.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
         const deltaX = e.clientX - prevPointerX;
         dragDistance += Math.abs(deltaX);
-        worldGroup.rotation.y += deltaX * 0.008;
+        worldGroup.rotation.y += deltaX * 0.01;
         prevPointerX = e.clientX;
     });
 
@@ -498,7 +614,7 @@
     function animate3D() {
         requestAnimationFrame(animate3D);
         const t = clock.getElapsedTime();
-        if (fireflies) { fireflies.rotation.y = t * 0.06; }
+        if (fireflies) fireflies.rotation.y = t * 0.06;
         if (Date.now() - lastUserActivityTime > 240000 && !isAlarming) isSleeping = true;
 
         if (isSleeping) {
@@ -529,23 +645,29 @@
         renderer.setSize(container.clientWidth, container.clientHeight);
     });
 
-    // --- 3. ХОЛСТ HUD (РУКИ, ОСАНКА И РАНКА) ---
+    // --- 3. ХОЛСТ HUD: РАНКА, СЛЕДУЮЩАЯ ЗА ЛИЦОМ ---
     const hudCanvas = document.getElementById('hudCanvas');
     const hudCtx = hudCanvas.getContext('2d');
-    let woundTarget = JSON.parse(localStorage.getItem('pet_wound_target') || 'null'); // {x: 0.5, y: 0.5}
+    let woundRelative = JSON.parse(localStorage.getItem('pet_wound_relative') || 'null');
 
-    // Клик по видео: установка конкретной ранки
     hudCanvas.addEventListener('click', (e) => {
         const rect = hudCanvas.getBoundingClientRect();
         const clickX = (e.clientX - rect.left) / rect.width;
         const clickY = (e.clientY - rect.top) / rect.height;
-        woundTarget = { x: clickX, y: clickY };
-        localStorage.setItem('pet_wound_target', JSON.stringify(woundTarget));
-        document.getElementById('chickSpeech').innerText = '🎯 Зона ранки зафиксирована! Буду беречь её!';
-        playCustomSound('beep');
+        const normClickX = 1.0 - clickX;
+
+        if (latestFaceBBox) {
+            woundRelative = {
+                dx: (normClickX - latestFaceBBox.xCenter) / (latestFaceBBox.width || 0.4),
+                dy: (clickY - latestFaceBBox.yCenter) / (latestFaceBBox.height || 0.5)
+            };
+            localStorage.setItem('pet_wound_relative', JSON.stringify(woundRelative));
+            document.getElementById('chickSpeech').innerText = '🎯 Ранка зафиксирована на лице и следует за тобой!';
+            playCustomSound('beep');
+        }
     });
 
-    // --- 4. ДЕТЕКЦИЯ MEDIAPIPE (ЛИЦО + РУКИ + ДРОЖАНИЕ) ---
+    // --- 4. ДЕТЕКЦИЯ: ЛИЦО СБОКУ + ЧУТКАЯ ДРОЖЬ + СЛЕДЯЩАЯ РАНКА ---
     const videoElement = document.getElementById('webcamVideo');
     const speechBadge = document.getElementById('chickSpeech');
     const detectionBadge = document.getElementById('detectionBadge');
@@ -555,46 +677,71 @@
     const checkPinch = document.getElementById('checkPinch');
     const checkPosture = document.getElementById('checkPosture');
     const checkJitter = document.getElementById('checkJitter');
+    const jitterAlertBadge = document.getElementById('jitterAlertBadge');
     const ecoFpsCheck = document.getElementById('ecoFpsCheck');
 
     let baselinePostureY = parseFloat(localStorage.getItem('pet_posture_baseline') || 'null');
-    let baselineSpineAngle = parseFloat(localStorage.getItem('pet_posture_angle') || 'null');
     let currentFaceCenterYForPosture = null;
-    let currentSpineAngle = 0;
+    let latestFaceBBox = null;
     let lastHandResults = null;
     let inDangerStartTime = 0;
 
-    // Детектор дрожания (нога/рука)
-    let previousFrameData = null;
-    let jitterSamples = [];
-    let isJittering = false;
+    // Детектор дрожи (анализ колебаний рук и лица)
+    let motionHistory = [], lastJitterAlertTime = 0;
 
     const faceDetection = new FaceDetection({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${f}` });
-    faceDetection.setOptions({ model: 'short', minDetectionConfidence: 0.55 });
+    faceDetection.setOptions({ model: 'short', minDetectionConfidence: 0.25 });
     faceDetection.onResults(results => {
         if (!results.detections || results.detections.length === 0) {
             drawHUD(null, lastHandResults);
             return;
         }
-        const bbox = results.detections[0].boundingBox;
-        autoFaceBox = { x: 1.0 - (bbox.xCenter + bbox.width / 2), y: bbox.yCenter - bbox.height / 2, w: bbox.width, h: bbox.height };
+        latestFaceBBox = results.detections[0].boundingBox;
+        autoFaceBox = {
+            x: 1.0 - (latestFaceBBox.xCenter + latestFaceBBox.width / 2),
+            y: latestFaceBBox.yCenter - latestFaceBBox.height / 2,
+            w: latestFaceBBox.width,
+            h: latestFaceBBox.height
+        };
+        currentFaceCenterYForPosture = latestFaceBBox.yCenter;
 
-        currentFaceCenterYForPosture = bbox.yCenter;
-        // Расчёт угла наклона головы/спины (сбоку и спереди)
-        currentSpineAngle = (bbox.xCenter - 0.5) * 45;
+        // ДЕТЕКЦИЯ ДРОЖИ: фиксирует как дрожание тела/головы, так и рук
+        if (checkJitter.checked) {
+            let currentMetric = latestFaceBBox.yCenter;
+            if (lastHandResults && lastHandResults.multiHandLandmarks && lastHandResults.multiHandLandmarks.length > 0) {
+                currentMetric += lastHandResults.multiHandLandmarks[0][8].y; // добавляем кончик указательного пальца
+            }
+            motionHistory.push(currentMetric);
+            if (motionHistory.length > 18) motionHistory.shift();
 
-        if (baselinePostureY === null) baselinePostureY = bbox.yCenter;
-        if (baselineSpineAngle === null) baselineSpineAngle = currentSpineAngle;
+            if (motionHistory.length >= 14) {
+                let oscillations = 0;
+                for (let i = 1; i < motionHistory.length - 1; i++) {
+                    const d1 = motionHistory[i] - motionHistory[i-1];
+                    const d2 = motionHistory[i+1] - motionHistory[i];
+                    if (d1 * d2 < 0 && Math.abs(d1) > 0.002) oscillations++;
+                }
+                const now = performance.now();
+                if (oscillations >= jitterThreshold && (now - lastJitterAlertTime) > 6000) {
+                    jitterAlertBadge.classList.remove('d-none');
+                    speechBadge.className = 'badge bg-warning text-dark shadow';
+                    speechBadge.innerText = '🦵 Замечено дрожание. Сделай глубокий вдох 🧘';
+                    playCustomSound('jitter'); // мягкий звук успокоения!
+                    lastJitterAlertTime = now;
+                    setTimeout(() => jitterAlertBadge.classList.add('d-none'), 3500);
+                }
+            }
+        }
 
-        evaluateDetections(bbox.yCenter);
-        drawHUD(bbox, lastHandResults);
+        if (baselinePostureY === null) baselinePostureY = latestFaceBBox.yCenter;
+        evaluateDetections(latestFaceBBox.yCenter);
+        drawHUD(latestFaceBBox, lastHandResults);
     });
 
     const hands = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
-    hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+    hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.45, minTrackingConfidence: 0.45 });
     hands.onResults(results => { lastHandResults = results; });
 
-    // Отрисовка скелета рук, палок спины и зоны ранки на холсте
     function drawHUD(faceBBox, handResults) {
         if (hudCanvas.width !== videoElement.videoWidth && videoElement.videoWidth > 0) {
             hudCanvas.width = videoElement.videoWidth;
@@ -604,14 +751,32 @@
         const H = hudCanvas.height || 240;
         hudCtx.clearRect(0, 0, W, H);
 
-        // 1. ДВЕ ПАЛКИ СПИНЫ (Эталонная зелёная пунктирная и текущая цветная)
+        // 1. СЛЕДЯЩАЯ РАНКА
+        if (faceBBox && woundRelative) {
+            const faceCenterX = (1.0 - faceBBox.xCenter);
+            const dynamicWoundX = (faceCenterX + woundRelative.dx * faceBBox.width) * W;
+            const dynamicWoundY = (faceBBox.yCenter + woundRelative.dy * faceBBox.height) * H;
+
+            hudCtx.strokeStyle = '#ef4444';
+            hudCtx.lineWidth = 2;
+            hudCtx.beginPath();
+            hudCtx.arc(dynamicWoundX, dynamicWoundY, 14, 0, Math.PI * 2);
+            hudCtx.stroke();
+            hudCtx.fillStyle = 'rgba(239, 68, 68, 0.35)';
+            hudCtx.fill();
+            hudCtx.fillStyle = '#ef4444';
+            hudCtx.font = 'bold 10px sans-serif';
+            hudCtx.fillText('🎯 Ранка', dynamicWoundX - 16, dynamicWoundY - 18);
+        }
+
+        // 2. ДВЕ ПАЛКИ ОСАНКИ
         if (checkPosture.checked && faceBBox) {
             const headX = (1.0 - faceBBox.xCenter) * W;
             const headY = faceBBox.yCenter * H;
             const spineBaseX = headX;
-            const spineBaseY = Math.min(H, headY + 110);
+            const spineBaseY = Math.min(H, headY + 120);
 
-            // Зелёная эталонная палка (где должна быть ровная спина)
+            // Зелёный эталон
             hudCtx.save();
             hudCtx.beginPath();
             hudCtx.setLineDash([5, 5]);
@@ -623,64 +788,25 @@
             hudCtx.stroke();
             hudCtx.restore();
 
-            // Текущая палка спины (отклонение при сутулости)
-            const isSlouching = baselinePostureY !== null && (faceBBox.yCenter > (baselinePostureY + 0.08));
+            // Текущая палка (краснеет только при реальной сутулости!)
+            const isSlouching = baselinePostureY !== null && (faceBBox.yCenter > (baselinePostureY + postureSensitivity));
             hudCtx.beginPath();
             hudCtx.strokeStyle = isSlouching ? '#ef4444' : '#facc15';
             hudCtx.lineWidth = 4;
             hudCtx.moveTo(spineBaseX, spineBaseY);
             hudCtx.lineTo(headX, headY);
             hudCtx.stroke();
-
-            // Узел головы
-            hudCtx.fillStyle = isSlouching ? '#ef4444' : '#22c55e';
-            hudCtx.beginPath();
-            hudCtx.arc(headX, headY, 6, 0, Math.PI * 2);
-            hudCtx.fill();
         }
 
-        // 2. ОТРИСОВКА ЗОНЫ РАНКИ
-        if (woundTarget) {
-            const wx = woundTarget.x * W;
-            const wy = woundTarget.y * H;
-            hudCtx.strokeStyle = '#ef4444';
-            hudCtx.lineWidth = 2;
-            hudCtx.beginPath();
-            hudCtx.arc(wx, wy, 16, 0, Math.PI * 2);
-            hudCtx.stroke();
-            hudCtx.fillStyle = 'rgba(239, 68, 68, 0.25)';
-            hudCtx.fill();
-            hudCtx.fillStyle = '#ef4444';
-            hudCtx.font = 'bold 10px sans-serif';
-            hudCtx.fillText('🎯 Ранка', wx - 18, wy - 20);
-        }
-
-        // 3. СКЕЛЕТ И ТОЧКИ РУК
+        // 3. ТОЧКИ ПАЛЬЦЕВ
         if (handResults && handResults.multiHandLandmarks) {
             handResults.multiHandLandmarks.forEach(landmarks => {
-                hudCtx.strokeStyle = '#06b6d4';
-                hudCtx.lineWidth = 2;
-
-                // Линии между суставами пальцев
-                const connections = [[0,1],[1,2],[2,3],[3,4], [0,5],[5,6],[6,7],[7,8], [5,9],[9,10],[10,11],[11,12], [9,13],[13,14],[14,15],[15,16], [13,17],[17,18],[18,19],[19,20], [0,17]];
-                connections.forEach(([i, j]) => {
-                    const x1 = (1.0 - landmarks[i].x) * W;
-                    const y1 = landmarks[i].y * H;
-                    const x2 = (1.0 - landmarks[j].x) * W;
-                    const y2 = landmarks[j].y * H;
-                    hudCtx.beginPath();
-                    hudCtx.moveTo(x1, y1);
-                    hudCtx.lineTo(x2, y2);
-                    hudCtx.stroke();
-                });
-
-                // Светящиеся кончики пальцев
-                [4, 8, 12, 16, 20].forEach(idx => {
+                [4, 8, 12].forEach(idx => {
                     const fx = (1.0 - landmarks[idx].x) * W;
                     const fy = landmarks[idx].y * H;
                     hudCtx.fillStyle = idx === 8 ? '#facc15' : '#38bdf8';
                     hudCtx.beginPath();
-                    hudCtx.arc(fx, fy, 4, 0, Math.PI * 2);
+                    hudCtx.arc(fx, fy, 5, 0, Math.PI * 2);
                     hudCtx.fill();
                 });
             });
@@ -691,15 +817,15 @@
         let isDanger = false;
         let dangerMessage = '';
 
-        // 1. Осанка
+        // 1. Осанка (Мягкий порог!)
         if (checkPosture.checked && baselinePostureY !== null) {
-            if (currentFaceCenterY > (baselinePostureY + 0.09)) {
+            if (currentFaceCenterY > (baselinePostureY + postureSensitivity)) {
                 isDanger = true;
                 dangerMessage = 'Сутулость: Выпрями спину! 🧍';
             }
         }
 
-        // 2. Проверка рук, ранки и щипка
+        // 2. Руки и ранка
         if (!isDanger && lastHandResults && lastHandResults.multiHandLandmarks) {
             const handsList = lastHandResults.multiHandLandmarks;
             for (let i = 0; i < handsList.length; i++) {
@@ -709,7 +835,6 @@
                 const handX = 1.0 - indexTip.x;
                 const handY = indexTip.y;
 
-                // Касание лица
                 const isInsideFace = handX >= autoFaceBox.x && handX <= (autoFaceBox.x + autoFaceBox.w) &&
                                      handY >= autoFaceBox.y && handY <= (autoFaceBox.y + autoFaceBox.h);
 
@@ -719,17 +844,17 @@
                     break;
                 }
 
-                // Опасность у ранки
-                if (woundTarget) {
-                    const distToWound = Math.hypot(handX - woundTarget.x, handY - woundTarget.y);
-                    if (distToWound < 0.12) {
+                if (latestFaceBBox && woundRelative) {
+                    const faceCenterX = (1.0 - latestFaceBBox.xCenter);
+                    const curWoundX = faceCenterX + woundRelative.dx * latestFaceBBox.width;
+                    const curWoundY = latestFaceBBox.yCenter + woundRelative.dy * latestFaceBBox.height;
+                    if (Math.hypot(handX - curWoundX, handY - curWoundY) < 0.12) {
                         isDanger = true;
-                        dangerMessage = 'Рука у ранки! Не трогай! 🎯';
+                        dangerMessage = 'Рука у ранки! 🎯';
                         break;
                     }
                 }
 
-                // Щипок кожи
                 if (checkPinch.checked) {
                     const pinchDist = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y - indexTip.y, thumbTip.z - indexTip.z);
                     if (pinchDist < 0.055) {
@@ -751,7 +876,6 @@
         if (isDanger) {
             detectionBadge.className = 'badge bg-danger';
             detectionBadge.innerText = dangerMessage;
-
             const now = Date.now();
             if (inDangerStartTime === 0) inDangerStartTime = now;
             const heldDuration = now - inDangerStartTime;
@@ -783,16 +907,12 @@
         }
     }
 
-    // --- 5. КАЛИБРОВКА С ОБРАТНЫМ ОТСЧЁТОМ 3... 2... 1... ---
+    // --- 5. КАЛИБРОВКА 3 СЕКУНДЫ ---
     const calibBtn = document.getElementById('calibratePostureBtn');
     const countdownBox = document.getElementById('countdownBox');
 
     calibBtn.addEventListener('click', () => {
-        if (!isCameraRunning) {
-            alert('Сначала включите камеру!');
-            return;
-        }
-
+        if (!isCameraRunning) { alert('Сначала включите камеру!'); return; }
         calibBtn.disabled = true;
         countdownBox.classList.remove('d-none');
         let count = 3;
@@ -809,11 +929,9 @@
                 countdownBox.innerText = '🎯';
                 if (currentFaceCenterYForPosture !== null) {
                     baselinePostureY = currentFaceCenterYForPosture;
-                    baselineSpineAngle = currentSpineAngle;
                     localStorage.setItem('pet_posture_baseline', baselinePostureY.toString());
-                    localStorage.setItem('pet_posture_angle', baselineSpineAngle.toString());
                     speechBadge.className = 'badge bg-success shadow';
-                    speechBadge.innerText = '📐 Идеальная осанка откалибрована! Держи спину!';
+                    speechBadge.innerText = '📐 Идеальная осанка зафиксирована! Держи спину!';
                     playCustomSound('pet');
                 }
                 setTimeout(() => {
@@ -824,11 +942,12 @@
         }, 1000);
     });
 
-    // --- 6. ЗАПУСК КАМЕРЫ ---
+    // --- 6. ЗАПУСК КАМЕРЫ + ФОНОВЫЙ ТИКЕР ДЛЯ ДРУГИХ ВКЛАДОК ---
     let isCameraRunning = false;
     const toggleBtn = document.getElementById('toggleCameraBtn');
     const perfBadge = document.getElementById('perfBadge');
     let cameraHelper = null, lastProcessedTime = 0, frameCount = 0, lastFpsCalc = performance.now();
+    let backgroundWorkerTimer = null;
 
     toggleBtn.addEventListener('click', async () => {
         if (!isCameraRunning) {
@@ -843,14 +962,13 @@
                 cameraHelper = new Camera(videoElement, {
                     onFrame: async () => {
                         const startT = performance.now();
-                        const throttleMs = ecoFpsCheck.checked ? 120 : 50;
+                        const throttleMs = ecoFpsCheck.checked ? 125 : 45;
                         if (startT - lastProcessedTime < throttleMs) return;
                         lastProcessedTime = startT;
 
                         await faceDetection.send({ image: videoElement });
                         await hands.send({ image: videoElement });
 
-                        const durationMs = Math.round(performance.now() - startT);
                         frameCount++;
                         if (performance.now() - lastFpsCalc >= 1000) {
                             perfBadge.innerText = `${(frameCount * 1000 / (performance.now() - lastFpsCalc)).toFixed(0)} FPS`;
@@ -863,6 +981,15 @@
                 });
 
                 await cameraHelper.start();
+
+                // Фоновый сторож: если вкладка свернута, продолжает опрос раз в 150мс
+                backgroundWorkerTimer = setInterval(async () => {
+                    if (document.hidden && isCameraRunning && videoElement.readyState >= 2) {
+                        await faceDetection.send({ image: videoElement });
+                        await hands.send({ image: videoElement });
+                    }
+                }, 150);
+
                 isCameraRunning = true;
                 toggleBtn.disabled = false;
                 toggleBtn.className = 'btn btn-danger fw-bold py-2 shadow-sm';
@@ -873,10 +1000,11 @@
                 toggleBtn.disabled = false;
                 toggleBtn.className = 'btn btn-warning fw-bold py-2 shadow-sm';
                 toggleBtn.innerText = '🎥 Запустить дозор';
-                alert('Не удалось подключить камеру. Разрешите доступ к веб-камере в браузере.');
+                alert('Не удалось подключить камеру.');
             }
         } else {
             if (cameraHelper) await cameraHelper.stop();
+            if (backgroundWorkerTimer) clearInterval(backgroundWorkerTimer);
             isCameraRunning = false;
             toggleBtn.className = 'btn btn-warning fw-bold py-2 shadow-sm';
             toggleBtn.innerText = '🎥 Запустить дозор';
@@ -885,7 +1013,7 @@
         }
     });
 
-    // --- 7. СТРИК, КОРМЛЕНИЕ И ЖИЗНИ ---
+    // --- 7. ПШЕНИЦА, ГАРДЕРОБ И СТРИК ---
     let secondsStreak = 0;
     let grains = parseInt(localStorage.getItem('pet_grains') || '0', 10);
     let level = parseInt(localStorage.getItem('pet_level') || '1', 10);
@@ -910,22 +1038,123 @@
     updatePreventedUI(); updateGrainUI(); updateLivesUI(); updateStreakUI();
 
     document.getElementById('feedChickBtn').addEventListener('click', () => {
-        if (grains <= 0) { alert('Нужно хотя бы 1 зерно 🌽!'); return; }
+        if (grains <= 0) { alert('Нужно хотя бы 1 пшеничное зерно 🌾! Держи стрик.'); return; }
         grains--; level++;
         localStorage.setItem('pet_grains', grains.toString());
         localStorage.setItem('pet_level', level.toString());
         updateGrainUI();
         playCustomSound('pet');
-        document.getElementById('chickSpeech').innerText = '😋 Ням-ням! Уровень повышен!';
+        document.getElementById('chickSpeech').innerText = '😋 Ням-ням! Пшеница супер, уровень повышен!';
     });
+
+    // КНОПКИ ГАРДЕРОБА
+    const toggleGlassesBtn = document.getElementById('toggleGlassesBtn');
+    function updateGlassesBtn() {
+        const isEquipped = localStorage.getItem('pet_has_glasses') === 'true';
+        const isUnlocked = localStorage.getItem('pet_glasses_unlocked') === 'true';
+        if (isEquipped) {
+            toggleGlassesBtn.innerText = 'Снять очки';
+            toggleGlassesBtn.className = 'btn btn-outline-danger btn-sm fw-bold px-2.5 py-0.5';
+        } else if (isUnlocked) {
+            toggleGlassesBtn.innerText = 'Надеть';
+            toggleGlassesBtn.className = 'btn btn-outline-warning btn-sm fw-bold px-2.5 py-0.5';
+        } else {
+            toggleGlassesBtn.innerText = '2 🌾 Купить';
+            toggleGlassesBtn.className = 'btn btn-warning btn-sm fw-bold px-2.5 py-0.5';
+        }
+    }
+    updateGlassesBtn();
+
+    toggleGlassesBtn.addEventListener('click', () => {
+        const isEquipped = localStorage.getItem('pet_has_glasses') === 'true';
+        const isUnlocked = localStorage.getItem('pet_glasses_unlocked') === 'true';
+
+        if (isEquipped) {
+            glassesNode.visible = false;
+            localStorage.setItem('pet_has_glasses', 'false');
+        } else if (isUnlocked) {
+            glassesNode.visible = true;
+            localStorage.setItem('pet_has_glasses', 'true');
+            playCustomSound('pet');
+        } else {
+            if (grains < 2) { alert('Не хватает пшеницы! Нужно 2 🌾'); return; }
+            grains -= 2;
+            localStorage.setItem('pet_grains', grains.toString());
+            localStorage.setItem('pet_glasses_unlocked', 'true');
+            localStorage.setItem('pet_has_glasses', 'true');
+            glassesNode.visible = true;
+            updateGrainUI();
+            playCustomSound('pet');
+        }
+        updateGlassesBtn();
+    });
+
+    const toggleCrownBtn = document.getElementById('toggleCrownBtn');
+    function updateCrownBtn() {
+        const isEquipped = localStorage.getItem('pet_has_crown') === 'true';
+        const isUnlocked = localStorage.getItem('pet_crown_unlocked') === 'true';
+        if (isEquipped) {
+            toggleCrownBtn.innerText = 'Снять корону';
+            toggleCrownBtn.className = 'btn btn-outline-danger btn-sm fw-bold px-2.5 py-0.5';
+        } else if (isUnlocked) {
+            toggleCrownBtn.innerText = 'Надеть';
+            toggleCrownBtn.className = 'btn btn-outline-warning btn-sm fw-bold px-2.5 py-0.5';
+        } else {
+            toggleCrownBtn.innerText = '4 🌾 Купить';
+            toggleCrownBtn.className = 'btn btn-warning btn-sm fw-bold px-2.5 py-0.5';
+        }
+    }
+    updateCrownBtn();
+
+    toggleCrownBtn.addEventListener('click', () => {
+        const isEquipped = localStorage.getItem('pet_has_crown') === 'true';
+        const isUnlocked = localStorage.getItem('pet_crown_unlocked') === 'true';
+
+        if (isEquipped) {
+            crownNode.visible = false;
+            localStorage.setItem('pet_has_crown', 'false');
+        } else if (isUnlocked) {
+            crownNode.visible = true;
+            localStorage.setItem('pet_has_crown', 'true');
+            playCustomSound('pet');
+        } else {
+            if (grains < 4) { alert('Не хватает пшеницы! Нужно 4 🌾'); return; }
+            grains -= 4;
+            localStorage.setItem('pet_grains', grains.toString());
+            localStorage.setItem('pet_crown_unlocked', 'true');
+            localStorage.setItem('pet_has_crown', 'true');
+            crownNode.visible = true;
+            updateGrainUI();
+            playCustomSound('pet');
+        }
+        updateCrownBtn();
+    });
+
+    // УВЕДОМЛЕНИЯ WINDOWS С КУЛДАУНОМ 20 СЕКУНД
+    let lastNotifTime = 0;
+    let activeNotification = null;
+
+    function sendSystemNotification(title, text) {
+        if (!enableWindowsNotifs) return;
+        const now = Date.now();
+        if (now - lastNotifTime < 20000) return;
+
+        if ('Notification' in window && Notification.permission === 'granted') {
+            if (activeNotification) activeNotification.close();
+            activeNotification = new Notification(title, {
+                body: text,
+                icon: 'favicon.svg',
+                silent: false
+            });
+            lastNotifTime = now;
+            activeNotification.onclick = () => { window.focus(); };
+        }
+    }
 
     function triggerChickenAlarm(customText = 'Опусти ручки!', alertType = 'face') {
         isAlarming = true;
         playCustomSound(alertType);
-
-        if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
-            new Notification('🐥 Цыпа-Дозор Alert', { body: customText, icon: 'favicon.svg' });
-        }
+        sendSystemNotification('🐥 Цыпа-Дозор Alert', customText);
 
         lives--;
         updateLivesUI();
@@ -948,6 +1177,54 @@
         }, 3200);
     }
 
+    // БЕЗОПАСНЫЙ ТЕСТ: НЕ СНИМАЕТ ЖИЗНИ
+    document.getElementById('testAlarmBtn').addEventListener('click', () => {
+        isAlarming = true;
+        playCustomSound('face');
+        sendSystemNotification('🐥 Цыпа-Дозор Демо', 'Тест звука и уведомления. Ваши жизни в безопасности!');
+        speechBadge.className = 'badge bg-info text-dark shadow';
+        speechBadge.innerText = '🧪 Демо-проверка: жизни НЕ снимаются!';
+        setTimeout(() => {
+            isAlarming = false;
+            speechBadge.className = 'badge bg-secondary shadow';
+            speechBadge.innerText = '👀 Цыпа спокойно присматривает...';
+        }, 2500);
+    });
+
+    // Настройки
+    document.getElementById('windowsNotifCheck').checked = enableWindowsNotifs;
+    document.getElementById('windowsNotifCheck').addEventListener('change', (e) => {
+        enableWindowsNotifs = e.target.checked;
+        localStorage.setItem('pet_enable_notifs', enableWindowsNotifs.toString());
+    });
+
+    document.getElementById('postureSensRange').value = postureSensitivity;
+    document.getElementById('postureSensRange').addEventListener('input', (e) => {
+        postureSensitivity = parseFloat(e.target.value);
+        localStorage.setItem('pet_posture_sens', postureSensitivity.toString());
+        document.getElementById('postureSensValue').innerText = `${postureSensitivity}`;
+    });
+
+    document.getElementById('jitterSensRange').value = jitterThreshold;
+    document.getElementById('jitterSensRange').addEventListener('input', (e) => {
+        jitterThreshold = parseInt(e.target.value, 10);
+        localStorage.setItem('pet_jitter_thresh', jitterThreshold.toString());
+    });
+
+    document.getElementById('volumeRange').value = Math.round(currentVolume * 100);
+    document.getElementById('volumeRange').addEventListener('input', (e) => {
+        currentVolume = e.target.value / 100;
+        document.getElementById('volumeValue').innerText = e.target.value + '%';
+        localStorage.setItem('pet_volume', currentVolume.toString());
+    });
+
+    document.getElementById('dwellRange').value = dwellThresholdSeconds;
+    document.getElementById('dwellRange').addEventListener('input', (e) => {
+        dwellThresholdSeconds = parseFloat(e.target.value);
+        document.getElementById('dwellValue').innerText = dwellThresholdSeconds + ' сек';
+        localStorage.setItem('pet_dwell_time', dwellThresholdSeconds.toString());
+    });
+
     setInterval(() => {
         if (isCameraRunning && !isAlarming) {
             secondsStreak++;
@@ -964,9 +1241,6 @@
             updateStreakUI();
         }
     }, 1000);
-
-    document.getElementById('testAlarmBtn').addEventListener('click', () => triggerChickenAlarm('Тест реакции!', 'face'));
-    document.getElementById('testSoundBtn').addEventListener('click', () => playCustomSound('face'));
 </script>
 </body>
 </html>
