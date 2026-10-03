@@ -24,6 +24,11 @@
             text-shadow: 0 0 20px rgba(250, 204, 21, 0.8);
             pointer-events: none; z-index: 20;
         }
+        .color-dot {
+            width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid #334155;
+            display: inline-block; transition: transform 0.15s;
+        }
+        .color-dot:hover { transform: scale(1.2); }
         @media (max-width: 576px) {
             .btn-mode { font-size: 11px; padding: 4px 6px; }
             .badge-stat { font-size: 10px; padding: 3px 5px; }
@@ -38,13 +43,14 @@
     <div class="card bg-card-dark border-secondary p-2.5 mb-2 shadow-sm">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <div class="d-flex align-items-center gap-2">
-                <span class="fs-4">🐥</span>
+                <span class="fs-4" id="mainIcon">🐥</span>
                 <div>
                     <div class="fw-bold text-warning d-flex align-items-center gap-1.5" style="font-size: 14px;">
-                        Цыпа-Дозор
+                        <span id="petNameTitle">Цыпа-Дозор</span>
                         <span id="levelBadge" class="badge bg-warning text-dark font-monospace" style="font-size: 10px;">Lv. 1</span>
+                        <span id="evoBadge" class="badge bg-danger text-light font-monospace" style="font-size: 9px;">🍎 0</span>
                     </div>
-                    <small class="text-secondary" style="font-size: 10px;">Кликни — погладить ❤️</small>
+                    <small class="text-secondary" id="hatchHint" style="font-size: 10px;">Кликни — погладить ❤️</small>
                 </div>
             </div>
 
@@ -56,6 +62,7 @@
                     <button class="btn btn-outline-warning btn-sm py-0 px-1.5 ms-1" style="font-size: 10px;" data-bs-toggle="modal" data-bs-target="#wardrobeModal">🧢 Скины</button>
                 </div>
                 <button class="btn btn-outline-info btn-sm p-1 text-info" data-bs-toggle="modal" data-bs-target="#duelModal" title="Совместный дозор с другом">👥</button>
+                <button class="btn btn-outline-success btn-sm p-1 text-success" data-bs-toggle="modal" data-bs-target="#journalModal" title="Дневник побед">🏆</button>
                 <button class="btn btn-outline-secondary btn-sm p-1 text-light" data-bs-toggle="modal" data-bs-target="#settingsModal">⚙️</button>
             </div>
         </div>
@@ -109,13 +116,13 @@
 
     <!-- Основная сцена -->
     <div class="row g-2">
-        <!-- 3D Цыплёнок -->
+        <!-- 3D Цыплёнок / Яйцо -->
         <div class="col-12 col-md-6">
             <div class="card bg-card-dark border-secondary shadow-sm position-relative overflow-hidden scene-box" style="height: 330px;">
                 <div id="chick3d-container" class="w-100 h-100" style="cursor: grab;"></div>
 
-                <div class="position-absolute top-0 start-0 m-2 badge bg-black bg-opacity-75 text-secondary border border-secondary" style="font-size: 10px;">
-                    👆 Вращай пальцем | Клик — ласка
+                <div id="eggTapPrompt" class="position-absolute top-0 start-0 m-2 badge bg-black bg-opacity-75 text-warning border border-warning" style="font-size: 11px;">
+                    🥚 Разбей скорлупу: кликни 3 раза!
                 </div>
 
                 <div id="heartOverlay" class="position-absolute top-50 start-50 translate-middle pointer-events-none d-none text-danger fs-1">
@@ -170,32 +177,48 @@
     </div>
 </div>
 
-<!-- Модалка совместного дозора с другом (Дуэль) -->
+<!-- Модалка совместного дозора WebRTC P2P (Битва до 15 минут) -->
 <div class="modal fade" id="duelModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-card-dark text-light border border-info shadow-lg">
             <div class="modal-header border-secondary py-2">
-                <h6 class="modal-title text-info fw-bold">👥 Совместный дозор с другом</h6>
+                <h6 class="modal-title text-info fw-bold">🎯 Совместная битва дозора (Цель: 15:00)</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-3">
-                <p class="small text-secondary mb-2">Держите стрик вместе! Чтобы не греть телефон видеосвязью, цыплята синхронизируют стрики, тревоги и жизни в реальном времени.</p>
+                <div class="alert alert-dark border-secondary p-2 mb-2.5 small text-center">
+                    🏆 <b>Правило победы:</b> Кто первым продержится <b>15 минут (15:00)</b> чистого времени без касания лица и сутулости — побеждает в битве и забирает <b>1 Эво-Фрукт 🍎</b>!
+                </div>
+
                 <div class="p-2.5 bg-black rounded border border-secondary mb-3 text-center">
                     <div class="small text-secondary mb-1">Ссылка для подключения друга:</div>
-                    <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary text-center font-monospace" id="roomLinkInput" readonly value="https://pethealthdetector.alfaxgood.com/#room=chick-777">
-                    <button class="btn btn-outline-info btn-sm mt-2 fw-bold" onclick="navigator.clipboard.writeText(document.getElementById('roomLinkInput').value); alert('Ссылка скопирована! Отправьте её другу.');">📋 Скопировать ссылку</button>
+                    <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary text-center font-monospace" id="roomLinkInput" readonly>
+                    <button class="btn btn-outline-info btn-sm mt-2 fw-bold" id="copyRoomBtn">📋 Скопировать ссылку другу</button>
                 </div>
-                <div class="d-flex justify-content-around p-2 bg-dark rounded border border-secondary text-center">
-                    <div>
-                        <div class="fw-bold text-warning small">Вы</div>
-                        <div class="fs-4">🐥</div>
-                        <div class="small text-success">00:00 (❤️❤️❤️)</div>
+
+                <!-- Прогресс битвы двух участников -->
+                <div class="row g-2 text-center">
+                    <div class="col-6">
+                        <div class="p-2 bg-dark rounded border border-secondary">
+                            <div class="fw-bold text-warning small">Вы</div>
+                            <div class="fs-2 my-1" id="myAvatarIcon">🐥</div>
+                            <div class="small font-monospace text-success fw-bold" id="myDuelScore">00:00 / 15:00</div>
+                            <div class="progress bg-secondary my-1.5" style="height: 6px;">
+                                <div id="myDuelProgress" class="progress-bar bg-warning" style="width: 0%;"></div>
+                            </div>
+                            <div class="small" id="myDuelLives">❤️❤️❤️</div>
+                        </div>
                     </div>
-                    <div class="border-end border-secondary"></div>
-                    <div>
-                        <div class="fw-bold text-info small">Друг (Ожидание...)</div>
-                        <div class="fs-4 opacity-50">🐣</div>
-                        <div class="small text-secondary">Подключение...</div>
+                    <div class="col-6">
+                        <div class="p-2 bg-dark rounded border border-secondary">
+                            <div class="fw-bold text-info small" id="friendName">Друг</div>
+                            <div class="fs-2 my-1" id="friendAvatarIcon">🐣</div>
+                            <div class="small font-monospace text-secondary" id="friendDuelScore">00:00 / 15:00</div>
+                            <div class="progress bg-secondary my-1.5" style="height: 6px;">
+                                <div id="friendDuelProgress" class="progress-bar bg-info" style="width: 0%;"></div>
+                            </div>
+                            <div class="small" id="friendDuelLives">⏳ Ожидание</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,7 +226,112 @@
     </div>
 </div>
 
-<!-- Модалка настроек -->
+<!-- Модалка Дневника побед 🏆 -->
+<div class="modal fade" id="journalModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-card-dark text-light border border-success shadow-lg">
+            <div class="modal-header border-secondary py-2">
+                <h6 class="modal-title text-success fw-bold">🏆 Дневник побед и эволюции</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <div class="row g-2 mb-3 text-center">
+                    <div class="col-4">
+                        <div class="p-2 bg-black rounded border border-secondary">
+                            <div class="fs-4 text-warning" id="statSavedCount">0</div>
+                            <small class="text-secondary" style="font-size: 10px;">Спас. ранок</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 bg-black rounded border border-secondary">
+                            <div class="fs-4 text-danger" id="statFruitsCount">0</div>
+                            <small class="text-secondary" style="font-size: 10px;">Эво-Яблок 🍎</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-2 bg-black rounded border border-secondary">
+                            <div class="fs-4 text-info" id="statStage">1/4</div>
+                            <small class="text-secondary" style="font-size: 10px;">Стадия роста</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2 bg-dark rounded border border-secondary small">
+                    <div class="fw-bold text-warning mb-1">🌟 Стадии эволюции (Макс. +30% к размеру):</div>
+                    <div>• <b>Lv. 1 Малыш</b>: Базовый цыплёнок из скорлупы.</div>
+                    <div>• <b>Lv. 2 Подросток (+8%)</b>: Золотистые кончики крыльев.</div>
+                    <div>• <b>Lv. 3 Страж (+18%)</b>: Аура света вокруг гнезда.</div>
+                    <div>• <b>Lv. 4 Царский Феникс (+30%)</b>: Финальный гордый размер.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка гардероба + Косметика пятнышек -->
+<div class="modal fade" id="wardrobeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-card-dark text-light border border-secondary shadow-lg">
+            <div class="modal-header border-secondary py-2">
+                <h6 class="modal-title text-warning fw-bold">🧢 Гардероб, Перья и Косметика</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <!-- Окрас перьев -->
+                <div class="mb-3">
+                    <label class="form-label text-warning small fw-bold mb-1">Цвет перьев цыплёнка:</label>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="color-dot" style="background-color: #fde047;" onclick="setFeatherColor('#fde047')" title="Золотой"></span>
+                        <span class="color-dot" style="background-color: #f472b6;" onclick="setFeatherColor('#f472b6')" title="Сакура Розовый"></span>
+                        <span class="color-dot" style="background-color: #f8fafc;" onclick="setFeatherColor('#f8fafc')" title="Белоснежный"></span>
+                        <span class="color-dot" style="background-color: #c084fc;" onclick="setFeatherColor('#c084fc')" title="Лавандовый"></span>
+                        <span class="color-dot" style="background-color: #2dd4bf;" onclick="setFeatherColor('#2dd4bf')" title="Мятный"></span>
+                        <span class="color-dot" style="background-color: #fb923c;" onclick="setFeatherColor('#fb923c')" title="Карамельный"></span>
+                    </div>
+                </div>
+
+                <!-- Косметика пятнышка на боку -->
+                <div class="p-2.5 mb-3 bg-black rounded border border-secondary">
+                    <div class="d-flex justify-content-between align-items-center mb-1.5">
+                        <span class="fw-bold small text-warning">🎨 Пятнышко на теле:</span>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="spotsCheck" checked>
+                        </div>
+                    </div>
+                    <small class="text-secondary d-block mb-1.5" style="font-size: 11px;">Стильное родимое пятнышко на крылышке. Можно сменить цвет:</small>
+                    <div class="d-flex gap-1.5">
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#78350f')">Шоколадное</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ffffff')">Белое</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ea580c')">Оранжевое</button>
+                    </div>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button class="btn btn-outline-warning btn-sm fw-bold" id="reHatchBtn">🥚 Разбить новое случайное яйцо</button>
+                </div>
+
+                <small class="text-secondary d-block mb-1.5 fw-bold">Аксессуары (Авто-подгонка под голову):</small>
+                <div class="list-group bg-transparent">
+                    <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <div class="fw-bold small">🕶️ Очки Thug Life</div>
+                            <small class="text-secondary" style="font-size: 11px;">Очки на клюв</small>
+                        </div>
+                        <button id="toggleGlassesBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">2 🌾 Купить</button>
+                    </div>
+                    <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2 mt-1.5">
+                        <div>
+                            <div class="fw-bold small">👑 Царская Корона</div>
+                            <small class="text-secondary" style="font-size: 11px;">Золотая корона на макушку</small>
+                        </div>
+                        <button id="toggleCrownBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">4 🌾 Купить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка настроек (Полная версия как на фото 2) -->
 <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-card-dark text-light border border-secondary shadow-lg">
@@ -212,89 +340,62 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-3">
-                <div class="p-2 mb-2.5 bg-black rounded border border-secondary">
-                    <div class="form-check form-switch mb-0">
+                <!-- Windows уведомления -->
+                <div class="p-2.5 mb-2.5 bg-black rounded border border-secondary">
+                    <div class="form-check form-switch mb-1">
                         <input class="form-check-input" type="checkbox" id="windowsNotifCheck" checked>
                         <label class="form-check-label small text-warning fw-bold" for="windowsNotifCheck">
                             🔔 Всплывающие уведомления Windows
                         </label>
                     </div>
-                    <small class="text-secondary d-block mt-0.5" style="font-size: 10px;">Включите, чтобы видеть подсказки поверх любых программ.</small>
+                    <small class="text-secondary d-block" style="font-size: 11px;">Включите, чтобы видеть подсказки поверх любых программ.</small>
                 </div>
 
+                <!-- Мягкость осанки -->
                 <div class="mb-2.5">
                     <div class="d-flex justify-content-between small text-secondary mb-1">
                         <span>Мягкость осанки (порог сутулости):</span>
-                        <span id="postureSensValue">0.16 (Мягкая)</span>
+                        <span id="postureSensValue" class="fw-bold text-warning font-monospace">0.16</span>
                     </div>
-                    <input type="range" class="form-range" id="postureSensRange" min="0.10" max="0.25" step="0.02" value="0.16">
+                    <input type="range" class="form-range" id="postureSensRange" min="0.08" max="0.26" step="0.02" value="0.16">
                 </div>
 
+                <!-- Чувствительность дрожи -->
                 <div class="mb-2.5">
                     <div class="d-flex justify-content-between small text-secondary mb-1">
                         <span>Чувствительность дрожи:</span>
-                        <span id="jitterSensValue">Средняя</span>
+                        <span id="jitterSensValue" class="fw-bold text-warning">Средняя</span>
                     </div>
-                    <input type="range" class="form-range" id="jitterSensRange" min="3" max="8" step="1" value="5">
+                    <input type="range" class="form-range" id="jitterSensRange" min="1" max="3" step="1" value="2">
                 </div>
 
+                <!-- Громкость звука -->
                 <div class="mb-2.5">
                     <div class="d-flex justify-content-between small text-secondary mb-1">
                         <span>Громкость звука:</span>
-                        <span id="volumeValue">80%</span>
+                        <span id="volumeValue" class="fw-bold text-warning font-monospace">80%</span>
                     </div>
                     <input type="range" class="form-range" id="volumeRange" min="0" max="100" value="80">
                 </div>
 
+                <!-- Задержка тревоги (возвращена!) -->
                 <div class="mb-2.5">
                     <div class="d-flex justify-content-between small text-secondary mb-1">
                         <span>Задержка тревоги:</span>
-                        <span id="dwellValue">1.2 сек</span>
+                        <span id="dwellValue" class="fw-bold text-warning font-monospace">1.2 сек</span>
                     </div>
-                    <input type="range" class="form-range" id="dwellRange" min="0.8" max="2.6" step="0.2" value="1.2">
+                    <input type="range" class="form-range" id="dwellRange" min="0.5" max="3.0" step="0.1" value="1.2">
                 </div>
 
-                <div class="p-2 bg-black rounded border border-secondary">
-                    <div class="form-check form-switch mb-0">
+                <!-- Игровой режим 8 FPS -->
+                <div class="p-2.5 bg-black rounded border border-secondary">
+                    <div class="form-check form-switch mb-1">
                         <input class="form-check-input" type="checkbox" id="ecoFpsCheck" checked>
                         <label class="form-check-label small text-warning fw-bold" for="ecoFpsCheck">
                             ⚡ Игровой режим: 8 FPS (Экономия батареи и CPU на 80%)
                         </label>
                     </div>
-                    <small class="text-secondary d-block mt-1" style="font-size: 10px;">
-                        Идеально для игр и телефонов: нейросеть анализирует 8 кадров/сек, не нагревая устройство и не вызывая лагов.
-                    </small>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Модалка гардероба -->
-<div class="modal fade" id="wardrobeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-card-dark text-light border border-secondary shadow-lg">
-            <div class="modal-header border-secondary py-2">
-                <h6 class="modal-title text-warning fw-bold">🧢 Гардероб Цыпы</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-3">
-                <small class="text-secondary d-block mb-2">Зарабатывай пшеницу 🌾 за чистый стрик и примеряй скины!</small>
-                <div class="list-group bg-transparent">
-                    <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2">
-                        <div>
-                            <div class="fw-bold small">🕶️ Очки Thug Life</div>
-                            <small class="text-secondary" style="font-size: 11px;">Черные стильные очки</small>
-                        </div>
-                        <button id="toggleGlassesBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">2 🌾 Купить</button>
-                    </div>
-                    <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2 mt-1.5">
-                        <div>
-                            <div class="fw-bold small">👑 Царская Корона</div>
-                            <small class="text-secondary" style="font-size: 11px;">Золотая корона с рубинами</small>
-                        </div>
-                        <button id="toggleCrownBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">4 🌾 Купить</button>
-                    </div>
+                    <small class="text-secondary d-block" style="font-size: 11px;">Идеально для игр и телефонов: нейросеть анализирует 8 кадров/сек, не нагревая устройство и не вызывая лагов.</small>
                 </div>
             </div>
         </div>
@@ -338,14 +439,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/face_detection.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
 <script>
-    // --- 1. АУДИОСИСТЕМА ---
+    // --- 1. АУДИО ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let currentVolume = parseFloat(localStorage.getItem('pet_volume') || '0.8');
     let dwellThresholdSeconds = parseFloat(localStorage.getItem('pet_dwell_time') || '1.2');
     let postureSensitivity = parseFloat(localStorage.getItem('pet_posture_sens') || '0.16');
-    let jitterThreshold = parseInt(localStorage.getItem('pet_jitter_thresh') || '5', 10);
     let enableWindowsNotifs = localStorage.getItem('pet_enable_notifs') !== 'false';
 
     function playCustomSound(alertType = 'pet') {
@@ -366,8 +467,30 @@
         masterGain.gain.setValueAtTime(currentVolume * 0.45, now);
         masterGain.connect(audioCtx.destination);
 
+        if (alertType === 'crack') {
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+            osc.connect(masterGain);
+            osc.start(now);
+            osc.stop(now + 0.08);
+            return;
+        }
+
+        if (alertType === 'fanfare') {
+            [0, 0.1, 0.2, 0.35].forEach((t, i) => {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523 + i * 130, now + t);
+                osc.connect(masterGain);
+                osc.start(now + t);
+                osc.stop(now + t + 0.15);
+            });
+            return;
+        }
+
         if (alertType === 'jitter') {
-            // Мягкий водяной дзен-тон при дрожи
             const osc = audioCtx.createOscillator();
             osc.type = 'sine';
             osc.frequency.setValueAtTime(440, now);
@@ -425,7 +548,15 @@
         }
     }
 
-    // --- 2. 3D СЦЕНА THREE.JS: ГНЕЗДО, РОМАШКИ, СВЕТЛЯЧКИ И АВТО-КАЛИБРОВКА BLENDER МОДЕЛЕЙ ---
+    // --- 2. 3D СЦЕНА THREE.JS: ГНЕЗДО, РОМАШКИ, КОРОНА И ПЯТНЫШКИ ---
+    let isHatched = localStorage.getItem('pet_is_hatched') === 'true';
+    let featherColor = localStorage.getItem('pet_feather_color') || '#fde047';
+    let spotColor = localStorage.getItem('pet_spot_color') || '#78350f';
+    let hasSpots = localStorage.getItem('pet_has_spots') !== 'false';
+    let evoFruits = parseInt(localStorage.getItem('pet_evo_fruits') || '0', 10);
+    let level = parseInt(localStorage.getItem('pet_level') || '1', 10);
+    let eggCrackClicks = 0;
+
     const container = document.getElementById('chick3d-container');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f172a);
@@ -451,7 +582,7 @@
     worldGroup.position.y = 0.40;
     scene.add(worldGroup);
 
-    // Травка и гнездо
+    // Гнездо и полянка
     const grassMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.65, 1.85, 0.28, 32), new THREE.MeshToonMaterial({ color: 0x16a34a }));
     grassMesh.position.y = -0.14;
     worldGroup.add(grassMesh);
@@ -498,6 +629,16 @@
     const fireflies = new THREE.Points(fireflyGeo, new THREE.PointsMaterial({ color: 0xfde047, size: 0.055, transparent: true, opacity: 0.85 }));
     worldGroup.add(fireflies);
 
+    // Яйцо
+    const eggGroup = new THREE.Group();
+    const eggGeo = new THREE.SphereGeometry(0.42, 24, 24);
+    eggGeo.scale(1, 1.35, 1);
+    const eggMesh = new THREE.Mesh(eggGeo, new THREE.MeshToonMaterial({ color: 0xfef08a }));
+    eggMesh.position.y = 0.42;
+    eggGroup.add(eggMesh);
+    worldGroup.add(eggGroup);
+
+    // Цыпленок
     const chickGroup = new THREE.Group();
     worldGroup.add(chickGroup);
 
@@ -505,78 +646,194 @@
     placeholderMesh.position.y = 0.45;
     chickGroup.add(placeholderMesh);
 
-    // АКСЕССУАРЫ
-    const accessoriesGroup = new THREE.Group();
-    chickGroup.add(accessoriesGroup);
+    // ТОЧКА КРЕПЛЕНИЯ ГОЛОВЫ (Head Anchor) - корона всегда сидит строго по центру головы!
+    const headAnchor = new THREE.Group();
+    headAnchor.position.set(0, 0.68, 0.02);
+    chickGroup.add(headAnchor);
 
-    // Вспомогательная функция авто-подгонки любой Blender-модели
-    function autoFitModel(object, targetWidth, targetY, targetZ = 0) {
-        const bbox = new THREE.Box3().setFromObject(object);
-        const size = bbox.getSize(new THREE.Vector3());
-        const center = bbox.getCenter(new THREE.Vector3());
-        const scale = targetWidth / (Math.max(size.x, size.y, size.z) || 1);
-        object.scale.set(scale, scale, scale);
-        object.position.set(-center.x * scale, targetY - (center.y - size.y / 2) * scale, targetZ - center.z * scale);
-        return object;
+    // АКЦЕНТНОЕ ПЯТНЫШКО НА БОКУ (Вместо веснушек на носу)
+    // МОРГАЮЩИЕ ГЛАЗКИ ЦЫПЛЁНКА (Blinking Eyes)
+    const eyeGroup = new THREE.Group();
+    const eyeGeo = new THREE.SphereGeometry(0.045, 12, 12);
+    eyeGeo.scale(1, 1.3, 0.5);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(-0.16, -0.06, 0.40);
+    eyeGroup.add(leftEye);
+
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.16, -0.06, 0.40);
+    eyeGroup.add(rightEye);
+    headAnchor.add(eyeGroup);
+
+    // Плавный таймер моргания
+    let nextBlinkTime = 2.5;
+    let isBlinking = false;
+    let blinkStartTime = 0;
+
+    function handleBlinking(elapsed) {
+        if (!isBlinking && elapsed >= nextBlinkTime) {
+            isBlinking = true;
+            blinkStartTime = elapsed;
+            nextBlinkTime = elapsed + 2.5 + Math.random() * 2.5; // моргает раз в 2.5–5 секунд
+        }
+        if (isBlinking) {
+            const blinkProgress = (elapsed - blinkStartTime) / 0.14; // длительность закрытия 140мс
+            if (blinkProgress >= 1.0) {
+                eyeGroup.scale.y = 1.0;
+                isBlinking = false;
+            } else {
+                // Мягкое прищуривание век
+                eyeGroup.scale.y = Math.max(0.08, Math.sin(blinkProgress * Math.PI) > 0.5 ? 0.08 : 0.6);
+            }
+        }
     }
 
-    // Резервные процедурные очки и корона
+    // МИЛЫЕ РУМЯНЫЕ ЩЁЧКИ (Вместо нелепой торчащей шишки на боку)
+    const cheekGroup = new THREE.Group();
+    const cheekMat = new THREE.MeshBasicMaterial({ color: spotColor, transparent: true, opacity: 0.85 });
+    const cheekGeo = new THREE.CircleGeometry(0.065, 16);
+
+    const leftCheek = new THREE.Mesh(cheekGeo, cheekMat);
+    leftCheek.position.set(-0.25, -0.14, 0.38);
+    leftCheek.rotation.y = -0.35;
+    cheekGroup.add(leftCheek);
+
+    const rightCheek = new THREE.Mesh(cheekGeo, cheekMat);
+    rightCheek.position.set(0.25, -0.14, 0.38);
+    rightCheek.rotation.y = 0.35;
+    cheekGroup.add(rightCheek);
+
+    headAnchor.add(cheekGroup);
+    cheekGroup.visible = hasSpots;
+
+    window.setSpotColor = function(hex) {
+        spotColor = hex;
+        localStorage.setItem('pet_spot_color', hex);
+        cheekMat.color.set(hex);
+        hasSpots = true;
+        cheekGroup.visible = true;
+        localStorage.setItem('pet_has_spots', 'true');
+        document.getElementById('spotsCheck').checked = true;
+    };
+
+    let loadedChickScene = null;
+
+    function applyChickColor(hex) {
+        featherColor = hex;
+        localStorage.setItem('pet_feather_color', hex);
+        placeholderMesh.material.color.set(hex);
+        if (loadedChickScene) {
+            loadedChickScene.traverse((child) => {
+                if (child.isMesh && child.material && child.material.color) {
+                    child.material.color.set(hex);
+                }
+            });
+        }
+    }
+    window.setFeatherColor = applyChickColor;
+
+    // Безопасный рост: максимум +30% к размеру (больше цыпа не раздувается на весь экран!)
+    function updateEvolutionScale() {
+        const cappedFruits = Math.min(10, evoFruits);
+        const evoMultiplier = Math.min(1.30, 1.0 + (level - 1) * 0.05 + cappedFruits * 0.025);
+        chickGroup.scale.set(evoMultiplier, evoMultiplier, evoMultiplier);
+        document.getElementById('statStage').innerText = `${Math.min(4, level)}/4`;
+        document.getElementById('evoBadge').innerText = `🍎 ${evoFruits}`;
+    }
+
+    // Резервная процедурная корона и очки
     let glassesNode = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.12, 0.06), new THREE.MeshBasicMaterial({ color: 0x0a0a0a }));
-    glassesNode.position.set(0, 0.62, 0.40);
+    glassesNode.position.set(0, -0.06, 0.38);
     glassesNode.visible = localStorage.getItem('pet_has_glasses') === 'true';
-    accessoriesGroup.add(glassesNode);
+    headAnchor.add(glassesNode);
 
     let crownNode = new THREE.Group();
-    const crownBase = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.26, 0.12, 16), new THREE.MeshToonMaterial({ color: 0xf59e0b }));
+    const crownBase = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.24, 0.10, 16), new THREE.MeshToonMaterial({ color: 0xf59e0b }));
     crownNode.add(crownBase);
     for (let i = 0; i < 5; i++) {
-        const spike = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.14, 4), new THREE.MeshToonMaterial({ color: 0xfbbf24 }));
+        const spike = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.12, 4), new THREE.MeshToonMaterial({ color: 0xfbbf24 }));
         const ang = (i * Math.PI * 2) / 5;
-        spike.position.set(Math.sin(ang) * 0.22, 0.12, Math.cos(ang) * 0.22);
+        spike.position.set(Math.sin(ang) * 0.20, 0.10, Math.cos(ang) * 0.20);
         crownNode.add(spike);
     }
-    crownNode.position.set(0, 0.88, 0);
+    crownNode.position.set(0, 0.12, 0); // плотно на макушке!
     crownNode.visible = localStorage.getItem('pet_has_crown') === 'true';
-    accessoriesGroup.add(crownNode);
+    headAnchor.add(crownNode);
 
-    // Загрузка chick.glb + АВТОМАТИЧЕСКАЯ ПОДГОНКА CROWN.GLB И GLASSES.GLB ИЗ BLENDER
+    // Загрузка chick.glb + АВТО-ЦЕНТРИРОВАНИЕ CROWN.GLB И GLASSES.GLB
     if (typeof THREE.GLTFLoader === 'function') {
         const gltfLoader = new THREE.GLTFLoader();
 
-        // 1. Цыплёнок
         gltfLoader.load('chick.glb', (gltf) => {
-            const model = gltf.scene;
-            const bbox = new THREE.Box3().setFromObject(model);
+            loadedChickScene = gltf.scene;
+            const bbox = new THREE.Box3().setFromObject(loadedChickScene);
             const size = bbox.getSize(new THREE.Vector3());
             const targetScale = 1.5 / (Math.max(size.x, size.y, size.z) || 1);
-            model.scale.set(targetScale, targetScale, targetScale);
-            model.position.set(0, 0.08, 0);
-            chickGroup.add(model);
+            loadedChickScene.scale.set(targetScale, targetScale, targetScale);
+            loadedChickScene.position.set(0, 0.08, 0);
+            applyChickColor(featherColor);
+            chickGroup.add(loadedChickScene);
             placeholderMesh.visible = false;
         });
 
-        // 2. Корона из Blender (crown.glb)
+        // Загрузка кастомной короны из Blender с жестким центрированием
         gltfLoader.load('crown.glb', (gltf) => {
-            accessoriesGroup.remove(crownNode);
+            headAnchor.remove(crownNode);
             crownNode = gltf.scene;
-            autoFitModel(crownNode, 0.48, 0.86, 0); // автоматически подгоняет размер под голову!
+            const bbox = new THREE.Box3().setFromObject(crownNode);
+            const size = bbox.getSize(new THREE.Vector3());
+            const center = bbox.getCenter(new THREE.Vector3());
+            const scale = 0.42 / (Math.max(size.x, size.z) || 1);
+            crownNode.scale.set(scale, scale, scale);
+            // Жестко центрируем в точке (0, 0) над головой!
+            crownNode.position.set(-center.x * scale, 0.10 - (center.y - size.y / 2) * scale, -center.z * scale);
             crownNode.visible = localStorage.getItem('pet_has_crown') === 'true';
-            accessoriesGroup.add(crownNode);
-            console.log('✅ crown.glb успешно откалиброван и надет!');
+            headAnchor.add(crownNode);
         }, undefined, () => {});
 
-        // 3. Очки из Blender (glasses.glb)
+        // Загрузка кастомных очков из Blender
         gltfLoader.load('glasses.glb', (gltf) => {
-            accessoriesGroup.remove(glassesNode);
+            headAnchor.remove(glassesNode);
             glassesNode = gltf.scene;
-            autoFitModel(glassesNode, 0.54, 0.60, 0.38); // автоматически сажает очки на клюв!
+            const bbox = new THREE.Box3().setFromObject(glassesNode);
+            const size = bbox.getSize(new THREE.Vector3());
+            const center = bbox.getCenter(new THREE.Vector3());
+            const scale = 0.50 / (size.x || 1);
+            glassesNode.scale.set(scale, scale, scale);
+            glassesNode.position.set(-center.x * scale, -0.06 - (center.y) * scale, 0.36 - center.z * scale);
             glassesNode.visible = localStorage.getItem('pet_has_glasses') === 'true';
-            accessoriesGroup.add(glassesNode);
-            console.log('✅ glasses.glb успешно откалиброван и надет!');
+            headAnchor.add(glassesNode);
         }, undefined, () => {});
     }
 
-    // Вращение пальцем и мышкой
+    function syncHatchState() {
+        eggGroup.visible = !isHatched;
+        chickGroup.visible = isHatched;
+        document.getElementById('eggTapPrompt').classList.toggle('d-none', isHatched);
+        document.getElementById('hatchHint').innerText = isHatched ? 'Кликни — погладить ❤️' : '🥚 Кликни по яйцу, чтобы разбить скорлупу!';
+        document.getElementById('mainIcon').innerText = isHatched ? '🐥' : '🥚';
+        updateEvolutionScale();
+    }
+    syncHatchState();
+
+    document.getElementById('reHatchBtn').addEventListener('click', () => {
+        isHatched = false;
+        eggCrackClicks = 0;
+        localStorage.setItem('pet_is_hatched', 'false');
+        syncHatchState();
+        bootstrap.Modal.getInstance(document.getElementById('wardrobeModal'))?.hide();
+    });
+
+    document.getElementById('spotsCheck').checked = hasSpots;
+    document.getElementById('spotsCheck').addEventListener('change', (e) => {
+        hasSpots = e.target.checked;
+        localStorage.setItem('pet_has_spots', hasSpots.toString());
+        sideSpotMesh.visible = hasSpots;
+    });
+
+    // Сенсорное вращение и вылупление
     let isDragging = false, prevPointerX = 0, dragDistance = 0;
     container.addEventListener('pointerdown', (e) => {
         isDragging = true; prevPointerX = e.clientX; dragDistance = 0;
@@ -595,9 +852,35 @@
     });
 
     let isPetting = false, lastPetSoundTime = 0, lastUserActivityTime = Date.now(), isSleeping = false;
+
     container.addEventListener('click', () => {
         if (dragDistance > 6) return;
         lastUserActivityTime = Date.now();
+
+        if (!isHatched) {
+            eggCrackClicks++;
+            playSynthesizedTone('crack');
+            eggMesh.rotation.z = (Math.random() - 0.5) * 0.25;
+
+            if (eggCrackClicks >= 3) {
+                isHatched = true;
+                localStorage.setItem('pet_is_hatched', 'true');
+                const randomColors = ['#fde047', '#f472b6', '#f8fafc', '#c084fc', '#2dd4bf', '#fb923c'];
+                const picked = randomColors[Math.floor(Math.random() * randomColors.length)];
+                applyChickColor(picked);
+                hasSpots = Math.random() > 0.4;
+                sideSpotMesh.visible = hasSpots;
+                localStorage.setItem('pet_has_spots', hasSpots.toString());
+
+                playSynthesizedTone('fanfare');
+                syncHatchState();
+                document.getElementById('chickSpeech').innerText = '🎉 Ура! Вылупился уникальный цыплёнок!';
+            } else {
+                document.getElementById('chickSpeech').innerText = `🥚 Хрусть! Осталось ударов: ${3 - eggCrackClicks}`;
+            }
+            return;
+        }
+
         if (isSleeping) isSleeping = false;
         isPetting = true;
         const heart = document.getElementById('heartOverlay');
@@ -614,10 +897,13 @@
     function animate3D() {
         requestAnimationFrame(animate3D);
         const t = clock.getElapsedTime();
+        handleBlinking(t);
         if (fireflies) fireflies.rotation.y = t * 0.06;
         if (Date.now() - lastUserActivityTime > 240000 && !isAlarming) isSleeping = true;
 
-        if (isSleeping) {
+        if (!isHatched) {
+            eggMesh.position.y = 0.42 + Math.sin(t * 3.0) * 0.02;
+        } else if (isSleeping) {
             chickGroup.position.y = -0.04 + Math.sin(t * 1.0) * 0.015;
             chickGroup.rotation.x = 0.15;
             document.getElementById('chickSpeech').innerText = '💤 Цыпа спит в гнезде... Кликни, чтобы разбудить!';
@@ -645,7 +931,7 @@
         renderer.setSize(container.clientWidth, container.clientHeight);
     });
 
-    // --- 3. ХОЛСТ HUD: РАНКА, СЛЕДУЮЩАЯ ЗА ЛИЦОМ ---
+    // --- 3. ХОЛСТ HUD: РАНКА ---
     const hudCanvas = document.getElementById('hudCanvas');
     const hudCtx = hudCanvas.getContext('2d');
     let woundRelative = JSON.parse(localStorage.getItem('pet_wound_relative') || 'null');
@@ -667,7 +953,7 @@
         }
     });
 
-    // --- 4. ДЕТЕКЦИЯ: ЛИЦО СБОКУ + ЧУТКАЯ ДРОЖЬ + СЛЕДЯЩАЯ РАНКА ---
+    // --- 4. ДЕТЕКЦИЯ ---
     const videoElement = document.getElementById('webcamVideo');
     const speechBadge = document.getElementById('chickSpeech');
     const detectionBadge = document.getElementById('detectionBadge');
@@ -685,8 +971,6 @@
     let latestFaceBBox = null;
     let lastHandResults = null;
     let inDangerStartTime = 0;
-
-    // Детектор дрожи (анализ колебаний рук и лица)
     let motionHistory = [], lastJitterAlertTime = 0;
 
     const faceDetection = new FaceDetection({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/face_detection/${f}` });
@@ -705,11 +989,10 @@
         };
         currentFaceCenterYForPosture = latestFaceBBox.yCenter;
 
-        // ДЕТЕКЦИЯ ДРОЖИ: фиксирует как дрожание тела/головы, так и рук
         if (checkJitter.checked) {
             let currentMetric = latestFaceBBox.yCenter;
             if (lastHandResults && lastHandResults.multiHandLandmarks && lastHandResults.multiHandLandmarks.length > 0) {
-                currentMetric += lastHandResults.multiHandLandmarks[0][8].y; // добавляем кончик указательного пальца
+                currentMetric += lastHandResults.multiHandLandmarks[0][8].y;
             }
             motionHistory.push(currentMetric);
             if (motionHistory.length > 18) motionHistory.shift();
@@ -722,11 +1005,11 @@
                     if (d1 * d2 < 0 && Math.abs(d1) > 0.002) oscillations++;
                 }
                 const now = performance.now();
-                if (oscillations >= jitterThreshold && (now - lastJitterAlertTime) > 6000) {
+                if (oscillations >= 5 && (now - lastJitterAlertTime) > 6000) {
                     jitterAlertBadge.classList.remove('d-none');
                     speechBadge.className = 'badge bg-warning text-dark shadow';
-                    speechBadge.innerText = '🦵 Замечено дрожание. Сделай глубокий вдох 🧘';
-                    playCustomSound('jitter'); // мягкий звук успокоения!
+                    speechBadge.innerText = '🦵 Замечено дрожание. Сделай вдох 🧘';
+                    playCustomSound('jitter');
                     lastJitterAlertTime = now;
                     setTimeout(() => jitterAlertBadge.classList.add('d-none'), 3500);
                 }
@@ -751,12 +1034,10 @@
         const H = hudCanvas.height || 240;
         hudCtx.clearRect(0, 0, W, H);
 
-        // 1. СЛЕДЯЩАЯ РАНКА
         if (faceBBox && woundRelative) {
             const faceCenterX = (1.0 - faceBBox.xCenter);
             const dynamicWoundX = (faceCenterX + woundRelative.dx * faceBBox.width) * W;
             const dynamicWoundY = (faceBBox.yCenter + woundRelative.dy * faceBBox.height) * H;
-
             hudCtx.strokeStyle = '#ef4444';
             hudCtx.lineWidth = 2;
             hudCtx.beginPath();
@@ -764,19 +1045,14 @@
             hudCtx.stroke();
             hudCtx.fillStyle = 'rgba(239, 68, 68, 0.35)';
             hudCtx.fill();
-            hudCtx.fillStyle = '#ef4444';
-            hudCtx.font = 'bold 10px sans-serif';
-            hudCtx.fillText('🎯 Ранка', dynamicWoundX - 16, dynamicWoundY - 18);
         }
 
-        // 2. ДВЕ ПАЛКИ ОСАНКИ
         if (checkPosture.checked && faceBBox) {
             const headX = (1.0 - faceBBox.xCenter) * W;
             const headY = faceBBox.yCenter * H;
             const spineBaseX = headX;
             const spineBaseY = Math.min(H, headY + 120);
 
-            // Зелёный эталон
             hudCtx.save();
             hudCtx.beginPath();
             hudCtx.setLineDash([5, 5]);
@@ -788,7 +1064,6 @@
             hudCtx.stroke();
             hudCtx.restore();
 
-            // Текущая палка (краснеет только при реальной сутулости!)
             const isSlouching = baselinePostureY !== null && (faceBBox.yCenter > (baselinePostureY + postureSensitivity));
             hudCtx.beginPath();
             hudCtx.strokeStyle = isSlouching ? '#ef4444' : '#facc15';
@@ -798,7 +1073,6 @@
             hudCtx.stroke();
         }
 
-        // 3. ТОЧКИ ПАЛЬЦЕВ
         if (handResults && handResults.multiHandLandmarks) {
             handResults.multiHandLandmarks.forEach(landmarks => {
                 [4, 8, 12].forEach(idx => {
@@ -817,7 +1091,6 @@
         let isDanger = false;
         let dangerMessage = '';
 
-        // 1. Осанка (Мягкий порог!)
         if (checkPosture.checked && baselinePostureY !== null) {
             if (currentFaceCenterY > (baselinePostureY + postureSensitivity)) {
                 isDanger = true;
@@ -825,7 +1098,6 @@
             }
         }
 
-        // 2. Руки и ранка
         if (!isDanger && lastHandResults && lastHandResults.multiHandLandmarks) {
             const handsList = lastHandResults.multiHandLandmarks;
             for (let i = 0; i < handsList.length; i++) {
@@ -942,7 +1214,7 @@
         }, 1000);
     });
 
-    // --- 6. ЗАПУСК КАМЕРЫ + ФОНОВЫЙ ТИКЕР ДЛЯ ДРУГИХ ВКЛАДОК ---
+    // --- 6. ЗАПУСК КАМЕРЫ ---
     let isCameraRunning = false;
     const toggleBtn = document.getElementById('toggleCameraBtn');
     const perfBadge = document.getElementById('perfBadge');
@@ -982,7 +1254,6 @@
 
                 await cameraHelper.start();
 
-                // Фоновый сторож: если вкладка свернута, продолжает опрос раз в 150мс
                 backgroundWorkerTimer = setInterval(async () => {
                     if (document.hidden && isCameraRunning && videoElement.readyState >= 2) {
                         await faceDetection.send({ image: videoElement });
@@ -1013,15 +1284,134 @@
         }
     });
 
-    // --- 7. ПШЕНИЦА, ГАРДЕРОБ И СТРИК ---
+    // --- 7. ЧЕСТНЫЙ МУЛЬТИПЛЕЕР (ФИКС БАГА С ЯБЛОКАМИ) ---
+    let myPeer = null;
+    let activeConnection = null;
+    const roomBroadcast = new BroadcastChannel('chick_duel_sync');
+    let lastSentAlarmState = false;
+    let friendPrevLives = 3;
+
+    let urlHash = window.location.hash;
+    let currentRoomCode = '';
+
+    if (urlHash.includes('room=')) {
+        currentRoomCode = urlHash.split('room=')[1].split('&')[0];
+    } else {
+        currentRoomCode = 'chick-' + Math.floor(1000 + Math.random() * 9000);
+        window.location.hash = `room=${currentRoomCode}`;
+    }
+
+    const fullRoomUrl = `${window.location.origin}${window.location.pathname}#room=${currentRoomCode}`;
+    document.getElementById('roomLinkInput').value = fullRoomUrl;
+
+    document.getElementById('copyRoomBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(fullRoomUrl);
+        alert('Ссылка скопирована! Отправьте её другу или откройте на телефоне.');
+    });
+
+    try {
+        myPeer = new Peer(currentRoomCode + '-host', { debug: 1 });
+        myPeer.on('open', (id) => { console.log('P2P Host готов:', id); });
+
+        myPeer.on('connection', (conn) => {
+            activeConnection = conn;
+            setupPeerConnection(conn);
+        });
+
+        myPeer.on('error', (err) => {
+            if (err.type === 'unavailable-id') {
+                const guestPeer = new Peer();
+                guestPeer.on('open', () => {
+                    const conn = guestPeer.connect(currentRoomCode + '-host');
+                    activeConnection = conn;
+                    setupPeerConnection(conn);
+                });
+            }
+        });
+    } catch (e) {
+        console.log('PeerJS fallback на BroadcastChannel');
+    }
+
+    function setupPeerConnection(conn) {
+        document.getElementById('friendName').innerText = 'Друг (Онлайн ✅)';
+        document.getElementById('friendDuelLives').innerText = '❤️❤️❤️';
+        document.getElementById('friendAvatarIcon').innerText = '🐥';
+
+        conn.on('data', (data) => {
+            handleFriendSync(data);
+        });
+    }
+
+    function handleFriendSync(data) {
+        if (!data) return;
+        const fScore = document.getElementById('friendDuelScore');
+        const fLives = document.getElementById('friendDuelLives');
+        const fIcon = document.getElementById('friendAvatarIcon');
+
+        const m = Math.floor(data.streak / 60).toString().padStart(2, '0');
+        const s = (data.streak % 60).toString().padStart(2, '0');
+        fScore.innerText = `${m}:${s} / 15:00`;
+        const fPercent = Math.min(100, (data.streak / 900) * 100);
+        const fProgBar = document.getElementById('friendDuelProgress');
+        if (fProgBar) fProgBar.style.width = fPercent + '%';
+        fLives.innerText = '❤️'.repeat(data.lives) + '🖤'.repeat(Math.max(0, 3 - data.lives));
+
+        if (data.isAlarming) {
+            fIcon.innerText = '🚨';
+            fScore.className = 'small font-monospace text-danger';
+        } else {
+            fIcon.innerText = '🐥';
+            fScore.className = 'small font-monospace text-success';
+        }
+
+        // ЧЕСТНОЕ НАЧИСЛЕНИЕ: Только РАЗОВЫЙ переход жизни (когда жизнь реально сгорела)
+        if (data.lives < friendPrevLives && !isAlarming) {
+            evoFruits++;
+            localStorage.setItem('pet_evo_fruits', evoFruits.toString());
+            updateEvolutionScale();
+            playSynthesizedTone('fanfare');
+            document.getElementById('chickSpeech').innerText = '🍎 Победа в раунде! Получен 1 Эво-Фрукт!';
+        }
+        friendPrevLives = data.lives;
+    }
+
+    roomBroadcast.onmessage = (event) => {
+        handleFriendSync(event.data);
+    };
+
+    // Синхронизация статуса раз в секунду
+    setInterval(() => {
+        const syncPayload = {
+            streak: secondsStreak,
+            lives: lives,
+            isAlarming: isAlarming,
+            level: level,
+            color: featherColor
+        };
+
+        if (activeConnection && activeConnection.open) {
+            activeConnection.send(syncPayload);
+        }
+        roomBroadcast.postMessage(syncPayload);
+
+        const m = Math.floor(secondsStreak / 60).toString().padStart(2, '0');
+        const s = (secondsStreak % 60).toString().padStart(2, '0');
+        document.getElementById('myDuelScore').innerText = `${m}:${s}`;
+        document.getElementById('myDuelLives').innerText = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+    }, 1000);
+
+    // --- 8. ПШЕНИЦА, ГАРДЕРОБ, СТРИК И ДНЕВНИК ---
     let secondsStreak = 0;
     let grains = parseInt(localStorage.getItem('pet_grains') || '0', 10);
-    let level = parseInt(localStorage.getItem('pet_level') || '1', 10);
     let daysStreak = parseInt(localStorage.getItem('pet_days_fire') || '1', 10);
     let preventedCount = parseInt(localStorage.getItem('pet_prevented_count') || '0', 10);
     let lives = 3;
 
-    function updatePreventedUI() { document.getElementById('preventedBadge').innerText = `🛡️ ${preventedCount} спас.`; }
+    function updatePreventedUI() {
+        document.getElementById('preventedBadge').innerText = `🛡️ ${preventedCount} спас.`;
+        document.getElementById('statSavedCount').innerText = preventedCount.toString();
+        document.getElementById('statFruitsCount').innerText = evoFruits.toString();
+    }
     function updateGrainUI() {
         document.getElementById('grainCount').innerText = grains.toString();
         document.getElementById('levelBadge').innerText = `Lv. ${level}`;
@@ -1043,11 +1433,11 @@
         localStorage.setItem('pet_grains', grains.toString());
         localStorage.setItem('pet_level', level.toString());
         updateGrainUI();
+        updateEvolutionScale();
         playCustomSound('pet');
         document.getElementById('chickSpeech').innerText = '😋 Ням-ням! Пшеница супер, уровень повышен!';
     });
 
-    // КНОПКИ ГАРДЕРОБА
     const toggleGlassesBtn = document.getElementById('toggleGlassesBtn');
     function updateGlassesBtn() {
         const isEquipped = localStorage.getItem('pet_has_glasses') === 'true';
@@ -1130,7 +1520,6 @@
         updateCrownBtn();
     });
 
-    // УВЕДОМЛЕНИЯ WINDOWS С КУЛДАУНОМ 20 СЕКУНД
     let lastNotifTime = 0;
     let activeNotification = null;
 
@@ -1141,11 +1530,7 @@
 
         if ('Notification' in window && Notification.permission === 'granted') {
             if (activeNotification) activeNotification.close();
-            activeNotification = new Notification(title, {
-                body: text,
-                icon: 'favicon.svg',
-                silent: false
-            });
+            activeNotification = new Notification(title, { body: text, icon: 'favicon.svg', silent: false });
             lastNotifTime = now;
             activeNotification.onclick = () => { window.focus(); };
         }
@@ -1177,7 +1562,6 @@
         }, 3200);
     }
 
-    // БЕЗОПАСНЫЙ ТЕСТ: НЕ СНИМАЕТ ЖИЗНИ
     document.getElementById('testAlarmBtn').addEventListener('click', () => {
         isAlarming = true;
         playCustomSound('face');
@@ -1191,13 +1575,13 @@
         }, 2500);
     });
 
-    // Настройки
     document.getElementById('windowsNotifCheck').checked = enableWindowsNotifs;
     document.getElementById('windowsNotifCheck').addEventListener('change', (e) => {
         enableWindowsNotifs = e.target.checked;
         localStorage.setItem('pet_enable_notifs', enableWindowsNotifs.toString());
     });
 
+    // Чувствительность осанки
     document.getElementById('postureSensRange').value = postureSensitivity;
     document.getElementById('postureSensRange').addEventListener('input', (e) => {
         postureSensitivity = parseFloat(e.target.value);
@@ -1205,12 +1589,18 @@
         document.getElementById('postureSensValue').innerText = `${postureSensitivity}`;
     });
 
-    document.getElementById('jitterSensRange').value = jitterThreshold;
-    document.getElementById('jitterSensRange').addEventListener('input', (e) => {
-        jitterThreshold = parseInt(e.target.value, 10);
-        localStorage.setItem('pet_jitter_thresh', jitterThreshold.toString());
-    });
+    // Чувствительность дрожи
+    const jitterSensRange = document.getElementById('jitterSensRange');
+    const jitterSensValue = document.getElementById('jitterSensValue');
+    if (jitterSensRange) {
+        const jitterLabels = { '1': 'Низкая', '2': 'Средняя', '3': 'Высокая' };
+        jitterSensRange.addEventListener('input', (e) => {
+            jitterSensValue.innerText = jitterLabels[e.target.value] || 'Средняя';
+            localStorage.setItem('pet_jitter_sens', e.target.value);
+        });
+    }
 
+    // Громкость
     document.getElementById('volumeRange').value = Math.round(currentVolume * 100);
     document.getElementById('volumeRange').addEventListener('input', (e) => {
         currentVolume = e.target.value / 100;
@@ -1218,12 +1608,36 @@
         localStorage.setItem('pet_volume', currentVolume.toString());
     });
 
-    document.getElementById('dwellRange').value = dwellThresholdSeconds;
-    document.getElementById('dwellRange').addEventListener('input', (e) => {
-        dwellThresholdSeconds = parseFloat(e.target.value);
-        document.getElementById('dwellValue').innerText = dwellThresholdSeconds + ' сек';
-        localStorage.setItem('pet_dwell_time', dwellThresholdSeconds.toString());
-    });
+    // Задержка тревоги (Запоминается и сразу отображается на экране камеры)
+    const dwellRange = document.getElementById('dwellRange');
+    if (dwellRange) {
+        dwellRange.value = dwellThresholdSeconds;
+        document.getElementById('dwellValue').innerText = dwellThresholdSeconds.toFixed(1) + ' сек';
+        dwellRange.addEventListener('input', (e) => {
+            dwellThresholdSeconds = parseFloat(e.target.value);
+            document.getElementById('dwellValue').innerText = dwellThresholdSeconds.toFixed(1) + ' сек';
+            localStorage.setItem('pet_dwell_time', dwellThresholdSeconds.toString());
+            dwellSecondsEl.innerText = '0.0с / ' + dwellThresholdSeconds.toFixed(1) + 'с';
+        });
+    }
+
+    // Проверка победы на 15 минут (900 секунд)
+    const DUEL_TARGET_SECONDS = 900; // 15 минут
+    function checkDuelVictory() {
+        const myPercent = Math.min(100, (secondsStreak / DUEL_TARGET_SECONDS) * 100);
+        const myProgBar = document.getElementById('myDuelProgress');
+        if (myProgBar) myProgBar.style.width = myPercent + '%';
+
+        if (secondsStreak >= DUEL_TARGET_SECONDS) {
+            evoFruits++;
+            localStorage.setItem('pet_evo_fruits', evoFruits.toString());
+            updateEvolutionScale();
+            playSynthesizedTone('fanfare');
+            alert('🏆 ПОБЕДА! Вы продержались 15 минут чистого дозора! Начислен 1 Эво-Фрукт 🍎');
+            secondsStreak = 0; // Сброс на новый раунд
+            updateStreakUI();
+        }
+    }
 
     setInterval(() => {
         if (isCameraRunning && !isAlarming) {
