@@ -1,33 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#1e293b"/>
-      <stop offset="100%" stop-color="#0f172a"/>
-    </radialGradient>
-    <linearGradient id="chick" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#fef08a"/>
-      <stop offset="100%" stop-color="#eab308"/>
+    <linearGradient id="chickBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff59d"/>
+      <stop offset="60%" stop-color="#fdd835"/>
+      <stop offset="100%" stop-color="#f57f17"/>
     </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="rgba(253, 224, 71, 0.45)"/>
+      <stop offset="100%" stop-color="rgba(253, 224, 71, 0)"/>
+    </radialGradient>
   </defs>
-  <!-- Фон иконки -->
-  <rect width="128" height="128" rx="32" fill="url(#bg)"/>
-  <!-- Травяной холмик -->
-  <ellipse cx="64" cy="104" rx="46" ry="14" fill="#16a34a"/>
-  <!-- Гнездо -->
-  <ellipse cx="64" cy="92" rx="38" ry="12" fill="#b45309"/>
-  <ellipse cx="64" cy="88" rx="32" ry="8" fill="#d97706"/>
-  <!-- Тельце цыпленка -->
-  <circle cx="64" cy="62" r="28" fill="url(#chick)"/>
-  <!-- Глазки (Кавай) -->
-  <circle cx="53" cy="56" r="4.5" fill="#0f172a"/>
-  <circle cx="51.5" cy="54.5" r="1.8" fill="#ffffff"/>
-  <circle cx="75" cy="56" r="4.5" fill="#0f172a"/>
-  <circle cx="73.5" cy="54.5" r="1.8" fill="#ffffff"/>
-  <!-- Оранжевый клювик -->
-  <polygon points="64,61 58,67 70,67" fill="#f97316"/>
+
+  <!-- Мягкое золотистое сияние без квадратной рамки -->
+  <circle cx="64" cy="58" r="46" fill="url(#glow)"/>
+
+  <!-- Травяной пьедестал -->
+  <ellipse cx="64" cy="106" rx="48" ry="14" fill="#15803d"/>
+  <ellipse cx="64" cy="103" rx="44" ry="11" fill="#22c55e"/>
+
+  <!-- Соломенное гнездо с объемом -->
+  <ellipse cx="64" cy="94" rx="40" ry="12" fill="#9a3412"/>
+  <ellipse cx="64" cy="90" rx="35" ry="9" fill="#d97706"/>
+
+  <!-- Круглое тельце цыпленка -->
+  <circle cx="64" cy="62" r="29" fill="url(#chickBody)"/>
+
+  <!-- Глазки с двойным бликом -->
+  <circle cx="53" cy="57" r="4.8" fill="#0f172a"/>
+  <circle cx="51.5" cy="55" r="2.0" fill="#ffffff"/>
+  <circle cx="54.2" cy="58.5" r="1.0" fill="#ffffff"/>
+
+  <circle cx="75" cy="57" r="4.8" fill="#0f172a"/>
+  <circle cx="73.5" cy="55" r="2.0" fill="#ffffff"/>
+  <circle cx="76.2" cy="58.5" r="1.0" fill="#ffffff"/>
+
   <!-- Румяные щёчки -->
-  <ellipse cx="46" cy="65" rx="3.5" ry="2" fill="#f87171" opacity="0.6"/>
-  <ellipse cx="82" cy="65" rx="3.5" ry="2" fill="#f87171" opacity="0.6"/>
-  <!-- Парящее сердечко -->
-  <path d="M64 25 C64 20, 56 16, 52 22 C48 28, 64 36, 64 36 C64 36, 80 28, 76 22 C72 16, 64 20, 64 25 Z" fill="#ef4444"/>
+  <ellipse cx="44" cy="66" rx="4.2" ry="2.5" fill="#f43f5e" opacity="0.65"/>
+  <ellipse cx="84" cy="66" rx="4.2" ry="2.5" fill="#f43f5e" opacity="0.65"/>
+
+  <!-- Клювик -->
+  <polygon points="64,62 57,69 71,69" fill="#ea580c"/>
+  <polygon points="64,65 59,69 69,69" fill="#f97316"/>
+
+  <!-- Сердечко-хохолок -->
+  <path d="M64 26 C64 20, 56 16, 52 22 C48 28, 64 37, 64 37 C64 37, 80 28, 76 22 C72 16, 64 20, 64 26 Z" fill="#ef4444"/>
 </svg>

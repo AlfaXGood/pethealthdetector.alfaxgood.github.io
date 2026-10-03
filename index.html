@@ -177,7 +177,7 @@
     </div>
 </div>
 
-<!-- Модалка совместного дозора WebRTC P2P (Битва до 15 минут) -->
+<!-- Модалка совместного дозора WebRTC P2P -->
 <div class="modal fade" id="duelModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-card-dark text-light border border-info shadow-lg">
@@ -187,20 +187,19 @@
             </div>
             <div class="modal-body p-3">
                 <div class="alert alert-dark border-secondary p-2 mb-2.5 small text-center">
-                    🏆 <b>Правило победы:</b> Кто первым продержится <b>15 минут (15:00)</b> чистого времени без касания лица и сутулости — побеждает в битве и забирает <b>1 Эво-Фрукт 🍎</b>!
+                    🏆 <b>Цель:</b> Кто первым выдержит <b>15 минут</b> без срыва — забирает <b>1 Эво-Фрукт 🍎</b>!
                 </div>
 
                 <div class="p-2.5 bg-black rounded border border-secondary mb-3 text-center">
-                    <div class="small text-secondary mb-1">Ссылка для подключения друга:</div>
+                    <div class="small text-secondary mb-1">Ссылка для друга:</div>
                     <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary text-center font-monospace" id="roomLinkInput" readonly>
                     <button class="btn btn-outline-info btn-sm mt-2 fw-bold" id="copyRoomBtn">📋 Скопировать ссылку другу</button>
                 </div>
 
-                <!-- Прогресс битвы двух участников -->
-                <div class="row g-2 text-center">
+                <div class="row g-2 text-center mb-3">
                     <div class="col-6">
                         <div class="p-2 bg-dark rounded border border-secondary">
-                            <div class="fw-bold text-warning small">Вы</div>
+                            <div class="fw-bold text-warning small">Вы (В сети 🟢)</div>
                             <div class="fs-2 my-1" id="myAvatarIcon">🐥</div>
                             <div class="small font-monospace text-success fw-bold" id="myDuelScore">00:00 / 15:00</div>
                             <div class="progress bg-secondary my-1.5" style="height: 6px;">
@@ -211,15 +210,19 @@
                     </div>
                     <div class="col-6">
                         <div class="p-2 bg-dark rounded border border-secondary">
-                            <div class="fw-bold text-info small" id="friendName">Друг</div>
+                            <div class="fw-bold text-secondary small" id="friendName">Друг (Ожидание ⏳)</div>
                             <div class="fs-2 my-1" id="friendAvatarIcon">🐣</div>
                             <div class="small font-monospace text-secondary" id="friendDuelScore">00:00 / 15:00</div>
                             <div class="progress bg-secondary my-1.5" style="height: 6px;">
                                 <div id="friendDuelProgress" class="progress-bar bg-info" style="width: 0%;"></div>
                             </div>
-                            <div class="small" id="friendDuelLives">⏳ Ожидание</div>
+                            <div class="small text-secondary" id="friendDuelLives">💤 Оффлайн</div>
                         </div>
                     </div>
+                </div>
+
+                <div class="text-center border-top border-secondary pt-2">
+                    <button class="btn btn-outline-danger btn-sm px-3 fw-bold" id="leaveDuelBtn">🚪 Покинуть бой</button>
                 </div>
             </div>
         </div>
@@ -289,19 +292,20 @@
                     </div>
                 </div>
 
-                <!-- Косметика пятнышка на боку -->
+                <!-- Косметика пятнышек по телу -->
                 <div class="p-2.5 mb-3 bg-black rounded border border-secondary">
                     <div class="d-flex justify-content-between align-items-center mb-1.5">
-                        <span class="fw-bold small text-warning">🎨 Пятнышко на теле:</span>
+                        <span class="fw-bold small text-warning">🎨 Пятнышки по телу:</span>
                         <div class="form-check form-switch mb-0">
                             <input class="form-check-input" type="checkbox" id="spotsCheck" checked>
                         </div>
                     </div>
-                    <small class="text-secondary d-block mb-1.5" style="font-size: 11px;">Стильное родимое пятнышко на крылышке. Можно сменить цвет:</small>
-                    <div class="d-flex gap-1.5">
-                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#78350f')">Шоколадное</button>
-                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ffffff')">Белое</button>
-                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ea580c')">Оранжевое</button>
+                    <small class="text-secondary d-block mb-1.5" style="font-size: 11px;">Случайные пятнышки на крылышках и перьях:</small>
+                    <div class="d-flex gap-1.5 flex-wrap">
+                        <button class="btn btn-sm btn-outline-warning py-0 px-2" style="font-size: 10px;" onclick="randomizeSpots()">🎲 Перемешать</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#78350f')">Шоколад</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ffffff')">Белый</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ea580c')">Оранж</button>
                     </div>
                 </div>
 
@@ -309,7 +313,7 @@
                     <button class="btn btn-outline-warning btn-sm fw-bold" id="reHatchBtn">🥚 Разбить новое случайное яйцо</button>
                 </div>
 
-                <small class="text-secondary d-block mb-1.5 fw-bold">Аксессуары (Авто-подгонка под голову):</small>
+                <small class="text-secondary d-block mb-1.5 fw-bold">Гардероб (Купленное сохраняется навсегда):</small>
                 <div class="list-group bg-transparent">
                     <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2">
                         <div>
@@ -324,6 +328,13 @@
                             <small class="text-secondary" style="font-size: 11px;">Золотая корона на макушку</small>
                         </div>
                         <button id="toggleCrownBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">4 🌾 Купить</button>
+                    </div>
+                    <div class="list-group-item bg-dark text-light border-secondary d-flex justify-content-between align-items-center py-2 mt-1.5">
+                        <div>
+                            <div class="fw-bold small">🎧 Наушники CS2</div>
+                            <small class="text-secondary" style="font-size: 11px;">Геймерская гарнитура</small>
+                        </div>
+                        <button id="toggleHeadsetBtn" class="btn btn-warning btn-sm fw-bold px-2.5 py-0.5" style="font-size: 11px;">3 🌾 Купить</button>
                     </div>
                 </div>
             </div>
@@ -425,8 +436,8 @@
                 </div>
             </div>
             <div class="modal-footer border-secondary justify-content-center py-2">
-                <button class="btn btn-danger fw-bold btn-sm px-3" onclick="navigator.clipboard.writeText('Мой цыпа в ударе! Держу чистый стрик в Цыпа-Дозор 🔥🐥'); alert('Текст скопирован!');">
-                    📋 Скопировать для сторис
+                <button class="btn btn-danger fw-bold btn-sm px-3" onclick="downloadStoryCard()">
+                    📸 Скачать готовую картинку для Сторис
                 </button>
             </div>
         </div>
@@ -652,70 +663,84 @@
     chickGroup.add(headAnchor);
 
     // АКЦЕНТНОЕ ПЯТНЫШКО НА БОКУ (Вместо веснушек на носу)
-    // МОРГАЮЩИЕ ГЛАЗКИ ЦЫПЛЁНКА (Blinking Eyes)
+    // МОРГАЮЩИЕ ГЛАЗКИ ЦЫПЛЁНКА (Опущены точно на уровень мордочки)
     const eyeGroup = new THREE.Group();
-    const eyeGeo = new THREE.SphereGeometry(0.045, 12, 12);
-    eyeGeo.scale(1, 1.3, 0.5);
-    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111827 });
+    const eyeGeo = new THREE.SphereGeometry(0.034, 12, 12);
+    eyeGeo.scale(1, 1.25, 0.45);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
 
     const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
-    leftEye.position.set(-0.16, -0.06, 0.40);
+    leftEye.position.set(-0.13, -0.13, 0.37); // Опущено ниже и ближе к клюву
     eyeGroup.add(leftEye);
 
     const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-    rightEye.position.set(0.16, -0.06, 0.40);
+    rightEye.position.set(0.13, -0.13, 0.37);
     eyeGroup.add(rightEye);
     headAnchor.add(eyeGroup);
 
     // Плавный таймер моргания
-    let nextBlinkTime = 2.5;
-    let isBlinking = false;
-    let blinkStartTime = 0;
-
+    let nextBlinkTime = 2.5, isBlinking = false, blinkStartTime = 0;
     function handleBlinking(elapsed) {
         if (!isBlinking && elapsed >= nextBlinkTime) {
             isBlinking = true;
             blinkStartTime = elapsed;
-            nextBlinkTime = elapsed + 2.5 + Math.random() * 2.5; // моргает раз в 2.5–5 секунд
+            nextBlinkTime = elapsed + 2.5 + Math.random() * 2.5;
         }
         if (isBlinking) {
-            const blinkProgress = (elapsed - blinkStartTime) / 0.14; // длительность закрытия 140мс
+            const blinkProgress = (elapsed - blinkStartTime) / 0.13;
             if (blinkProgress >= 1.0) {
                 eyeGroup.scale.y = 1.0;
                 isBlinking = false;
             } else {
-                // Мягкое прищуривание век
                 eyeGroup.scale.y = Math.max(0.08, Math.sin(blinkProgress * Math.PI) > 0.5 ? 0.08 : 0.6);
             }
         }
     }
 
-    // МИЛЫЕ РУМЯНЫЕ ЩЁЧКИ (Вместо нелепой торчащей шишки на боку)
-    const cheekGroup = new THREE.Group();
-    const cheekMat = new THREE.MeshBasicMaterial({ color: spotColor, transparent: true, opacity: 0.85 });
-    const cheekGeo = new THREE.CircleGeometry(0.065, 16);
+    // СЛУЧАЙНЫЕ ПЯТНЫШКИ ПО ВСЕМУ ТЕЛУ (Прилипают к фигурке)
+    const spotsContainer = new THREE.Group();
+    chickGroup.add(spotsContainer);
+    const spotSharedMat = new THREE.MeshBasicMaterial({ color: spotColor, side: THREE.DoubleSide });
 
-    const leftCheek = new THREE.Mesh(cheekGeo, cheekMat);
-    leftCheek.position.set(-0.25, -0.14, 0.38);
-    leftCheek.rotation.y = -0.35;
-    cheekGroup.add(leftCheek);
+    function generateBodySpots() {
+        while (spotsContainer.children.length > 0) {
+            spotsContainer.remove(spotsContainer.children[0]);
+        }
+        if (!hasSpots) return;
 
-    const rightCheek = new THREE.Mesh(cheekGeo, cheekMat);
-    rightCheek.position.set(0.25, -0.14, 0.38);
-    rightCheek.rotation.y = 0.35;
-    cheekGroup.add(rightCheek);
+        // Генерируем 5 аккуратных пятнышек в случайных точках тела
+        for (let i = 0; i < 5; i++) {
+            const r = 0.44; // радиус тела цыпы
+            const theta = (Math.PI * 0.25) + Math.random() * (Math.PI * 1.5); // бока, крылья и спинка
+            const phi = (Math.random() - 0.45) * 0.7; // высота по телу
 
-    headAnchor.add(cheekGroup);
-    cheekGroup.visible = hasSpots;
+            const spotDisc = new THREE.Mesh(new THREE.CircleGeometry(0.045 + Math.random() * 0.03, 12), spotSharedMat);
+            const x = r * Math.cos(theta) * Math.cos(phi);
+            const y = 0.38 + r * Math.sin(phi);
+            const z = r * Math.sin(theta) * Math.cos(phi);
+
+            spotDisc.position.set(x, y, z);
+            spotDisc.lookAt(x * 2, y, z * 2); // разворот наружу перпендикулярно перьям
+            spotsContainer.add(spotDisc);
+        }
+    }
+    generateBodySpots();
 
     window.setSpotColor = function(hex) {
         spotColor = hex;
         localStorage.setItem('pet_spot_color', hex);
-        cheekMat.color.set(hex);
+        spotSharedMat.color.set(hex);
         hasSpots = true;
-        cheekGroup.visible = true;
         localStorage.setItem('pet_has_spots', 'true');
         document.getElementById('spotsCheck').checked = true;
+        generateBodySpots();
+    };
+
+    window.randomizeSpots = function() {
+        hasSpots = true;
+        localStorage.setItem('pet_has_spots', 'true');
+        document.getElementById('spotsCheck').checked = true;
+        generateBodySpots();
     };
 
     let loadedChickScene = null;
@@ -1332,15 +1357,178 @@
         console.log('PeerJS fallback на BroadcastChannel');
     }
 
+    let lastFriendHeartbeat = 0;
+
     function setupPeerConnection(conn) {
-        document.getElementById('friendName').innerText = 'Друг (Онлайн ✅)';
+        lastFriendHeartbeat = Date.now();
+        document.getElementById('friendName').className = 'fw-bold text-success small';
+        document.getElementById('friendName').innerText = 'Друг (В сети 🟢)';
         document.getElementById('friendDuelLives').innerText = '❤️❤️❤️';
         document.getElementById('friendAvatarIcon').innerText = '🐥';
 
         conn.on('data', (data) => {
+            lastFriendHeartbeat = Date.now();
             handleFriendSync(data);
         });
+
+        conn.on('close', () => {
+            setFriendOffline();
+        });
     }
+
+    function setFriendOffline() {
+        const fName = document.getElementById('friendName');
+        if (fName) {
+            fName.className = 'fw-bold text-secondary small';
+            fName.innerText = 'Друг (Оффлайн 💤)';
+        }
+        const fLives = document.getElementById('friendDuelLives');
+        if (fLives) fLives.innerText = '🔴 Вышел из сети';
+    }
+
+    // Проверка активности друга каждые 2 секунды
+    setInterval(() => {
+        if (lastFriendHeartbeat > 0 && (Date.now() - lastFriendHeartbeat > 4500)) {
+            setFriendOffline();
+        }
+    }, 2000);
+
+    // Выход из боя с подтверждением
+    const leaveDuelBtn = document.getElementById('leaveDuelBtn');
+    if (leaveDuelBtn) {
+        leaveDuelBtn.addEventListener('click', () => {
+            if (confirm('Вы уверены, что хотите выйти из совместного дозора?')) {
+                if (activeConnection) {
+                    try { activeConnection.close(); } catch(e){}
+                    activeConnection = null;
+                }
+                setFriendOffline();
+                bootstrap.Modal.getInstance(document.getElementById('duelModal'))?.hide();
+            }
+        });
+    }
+
+    // 🎧 3D НАУШНИКИ В СЦЕНЕ THREE.JS
+    let headsetNode = new THREE.Group();
+    const bandMesh = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.03, 8, 24, Math.PI), new THREE.MeshToonMaterial({ color: 0xef4444 }));
+    bandMesh.position.set(0, 0.16, 0.02);
+    headsetNode.add(bandMesh);
+    [-0.23, 0.23].forEach(x => {
+        const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.05, 16), new THREE.MeshToonMaterial({ color: 0x111827 }));
+        cup.rotation.z = Math.PI / 2;
+        cup.position.set(x, 0.16, 0.02);
+        headsetNode.add(cup);
+    });
+    headsetNode.visible = localStorage.getItem('pet_has_headset') === 'true';
+    headAnchor.add(headsetNode);
+
+    // Обработка кнопки наушников
+    const toggleHeadsetBtn = document.getElementById('toggleHeadsetBtn');
+    function updateHeadsetBtn() {
+        if (!toggleHeadsetBtn) return;
+        const isEquipped = localStorage.getItem('pet_has_headset') === 'true';
+        const isUnlocked = localStorage.getItem('pet_headset_unlocked') === 'true';
+        if (isEquipped) {
+            toggleHeadsetBtn.innerText = 'Снять';
+            toggleHeadsetBtn.className = 'btn btn-outline-danger btn-sm fw-bold px-2.5 py-0.5';
+        } else if (isUnlocked) {
+            toggleHeadsetBtn.innerText = 'Надеть';
+            toggleHeadsetBtn.className = 'btn btn-outline-warning btn-sm fw-bold px-2.5 py-0.5';
+        } else {
+            toggleHeadsetBtn.innerText = '3 🌾 Купить';
+            toggleHeadsetBtn.className = 'btn btn-warning btn-sm fw-bold px-2.5 py-0.5';
+        }
+    }
+    updateHeadsetBtn();
+
+    if (toggleHeadsetBtn) {
+        toggleHeadsetBtn.addEventListener('click', () => {
+            const isEquipped = localStorage.getItem('pet_has_headset') === 'true';
+            const isUnlocked = localStorage.getItem('pet_headset_unlocked') === 'true';
+            if (isEquipped) {
+                headsetNode.visible = false;
+                localStorage.setItem('pet_has_headset', 'false');
+            } else if (isUnlocked) {
+                headsetNode.visible = true;
+                localStorage.setItem('pet_has_headset', 'true');
+                playCustomSound('pet');
+            } else {
+                if (grains < 3) { alert('Не хватает пшеницы! Нужно 3 🌾'); return; }
+                grains -= 3;
+                localStorage.setItem('pet_grains', grains.toString());
+                localStorage.setItem('pet_headset_unlocked', 'true');
+                localStorage.setItem('pet_has_headset', 'true');
+                headsetNode.visible = true;
+                updateGrainUI();
+                playCustomSound('pet');
+            }
+            updateHeadsetBtn();
+        });
+    }
+
+    // 📸 ГЕНЕРАТОР РЕАЛЬНОГО ПОСТЕРА ДЛЯ СТОРИС (Скачивание картинки в галерею)
+    window.downloadStoryCard = function() {
+        const c = document.createElement('canvas');
+        c.width = 1080; c.height = 1920; // Идеальный формат 9:16 для Stories/TikTok
+        const ctx = c.getContext('2d');
+
+        // Тёмный градиент фона
+        const grad = ctx.createLinearGradient(0, 0, 0, 1920);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(0.5, '#1e1b4b');
+        grad.addColorStop(1, '#090d16');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 1080, 1920);
+
+        // Светящаяся рамка
+        ctx.strokeStyle = '#facc15';
+        ctx.lineWidth = 14;
+        ctx.strokeRect(60, 60, 960, 1800);
+
+        // Заголовки
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 80px sans-serif';
+        ctx.fillText('🐥 ЦЫПА-ДОЗОР', 540, 360);
+
+        ctx.font = '40px sans-serif';
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText('МОЙ ДЕНЬ БЕЗ СУТУЛОСТИ И ПРИВЫЧЕК', 540, 440);
+
+        // Карточка огня
+        ctx.fillStyle = '#111827';
+        ctx.fillRect(160, 650, 760, 360);
+        ctx.strokeStyle = '#ef4444';
+        ctx.lineWidth = 6;
+        ctx.strokeRect(160, 650, 760, 360);
+
+        ctx.fillStyle = '#ef4444';
+        ctx.font = 'bold 120px monospace';
+        ctx.fillText(`🔥 ${daysStreak} ДЕНЬ`, 540, 840);
+
+        ctx.font = 'bold 50px sans-serif';
+        ctx.fillStyle = '#22c55e';
+        const m = Math.floor(secondsStreak / 60).toString().padStart(2, '0');
+        const s = (secondsStreak % 60).toString().padStart(2, '0');
+        ctx.fillText(`ЧИСТЫЙ СТРИК: ${m}:${s}`, 540, 940);
+
+        // Статистика
+        ctx.fillStyle = '#facc15';
+        ctx.font = 'bold 64px sans-serif';
+        ctx.fillText(`🛡️ Предотвращено щипков: ${preventedCount}`, 540, 1250);
+        ctx.fillText(`🍎 Эво-Яблок заработано: ${evoFruits}`, 540, 1370);
+
+        // Ссылка
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '42px monospace';
+        ctx.fillText('pethealthdetector.alfaxgood.com', 540, 1720);
+
+        // Скачивание файла
+        const link = document.createElement('a');
+        link.download = `chick-story-day-${daysStreak}.png`;
+        link.href = c.toDataURL('image/png');
+        link.click();
+    };
 
     function handleFriendSync(data) {
         if (!data) return;
