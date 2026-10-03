@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐥 Цыпа-Дозор — Трекер привычек и осанки</title>
+    <title>🐥 Цыпа-Дозор — Антистресс-хранитель и Осанка</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -222,9 +222,13 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-center gap-2 border-top border-secondary pt-2">
-                    <button class="btn btn-outline-info btn-sm px-2.5 fw-bold" id="startAiDuelBtn" title="Если друг оффлайн">🤖 Бой с ИИ-Цыпой (Соло)</button>
-                    <button class="btn btn-outline-danger btn-sm px-2.5 fw-bold" id="leaveDuelBtn">🚪 Покинуть бой</button>
+                <div class="border-top border-secondary pt-2 text-center">
+                    <div class="small text-secondary mb-1.5 fw-bold">Выберите режим дозора:</div>
+                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+                        <button class="btn btn-outline-warning btn-sm px-2.5 fw-bold" id="quickMatchBtn" title="Быстрый поиск случайного игрока">⚡ Быстрая игра</button>
+                        <button class="btn btn-outline-info btn-sm px-2.5 fw-bold" id="startAiDuelBtn" title="Тренировка без ожидания">🤖 С ИИ-Цыпой</button>
+                        <button class="btn btn-outline-danger btn-sm px-2.5 fw-bold" id="leaveDuelBtn">🚪 Выйти</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -319,9 +323,6 @@
                 <div class="p-2.5 mb-3 bg-black rounded border border-secondary">
                     <div class="d-flex justify-content-between align-items-center mb-1.5">
                         <span class="fw-bold small text-warning">🎨 Пятнышки по телу:</span>
-                        <div class="form-check form-switch mb-0">
-                            <input class="form-check-input" type="checkbox" id="spotsCheck" checked>
-                        </div>
                     </div>
                     <small class="text-secondary d-block mb-1.5" style="font-size: 11px;">Случайные пятнышки на крылышках и перьях:</small>
                     <div class="d-flex gap-1.5 flex-wrap">
@@ -329,6 +330,7 @@
                         <button class="btn btn-sm btn-outline-secondary py-0.5 px-2" style="font-size: 10px;" onclick="setSpotColor('#78350f')">Шоколад (1 🌾)</button>
                         <button class="btn btn-sm btn-outline-secondary py-0.5 px-2" style="font-size: 10px;" onclick="setSpotColor('#ffffff')">Белый (1 🌾)</button>
                         <button class="btn btn-sm btn-outline-secondary py-0.5 px-2" style="font-size: 10px;" onclick="setSpotColor('#ea580c')">Оранж (1 🌾)</button>
+                        <button class="btn btn-sm btn-outline-danger py-0.5 px-2" style="font-size: 10px;" onclick="cleanAllSpots()">✨ Убрать пятна (3 🌾)</button>
                     </div>
                 </div>
 
@@ -429,6 +431,14 @@
                             ⚡ Игровой режим: 8 FPS (Экономия батареи и CPU на 80%)
                         </label>
                     </div>
+                    <!-- Экспорт / Импорт настроек в буфер -->
+                    <div class="d-flex gap-2 pt-2 border-top border-secondary">
+                        <button class="btn btn-outline-warning btn-sm flex-fill fw-bold" id="copySettingsBtn">📋 Скопировать настройки</button>
+                        <button class="btn btn-outline-info btn-sm flex-fill fw-bold" id="pasteSettingsBtn">📥 Вставить настройки</button>
+                    </div>
+                    <div class="text-center text-secondary pt-1" style="font-size: 10px;">
+                        Горячая клавиша: <b>[Пробел]</b> — пауза и выключение камеры
+                    </div>
                     <small class="text-secondary d-block" style="font-size: 11px;">Идеально для игр и телефонов: нейросеть анализирует 8 кадров/сек, не нагревая устройство и не вызывая лагов.</small>
                 </div>
             </div>
@@ -483,15 +493,52 @@
     let postureSensitivity = parseFloat(localStorage.getItem('pet_posture_sens') || '0.16');
     let enableWindowsNotifs = localStorage.getItem('pet_enable_notifs') !== 'false';
 
+    // УМНЫЙ АУДИО-МЕНЕДЖЕР (Останавливает длинные звуки и плавно затухает)
+    let currentActiveAudio = null;
+    let audioFadeInterval = null;
+
     function playCustomSound(alertType = 'pet') {
+        // Мягко останавливаем предыдущий звук, если он ещё играет
+        if (currentActiveAudio) {
+            try {
+                currentActiveAudio.pause();
+                currentActiveAudio.currentTime = 0;
+            } catch(e) {}
+        }
+        clearInterval(audioFadeInterval);
+
         let soundFile = 'audio/pet.mp3';
         if (alertType === 'face') soundFile = 'audio/face.mp3';
         else if (alertType === 'pinch') soundFile = 'audio/pinch.mp3';
         else if (alertType === 'posture') soundFile = 'audio/posture.mp3';
+        else if (alertType === 'life_lost') soundFile = 'audio/life_lost.mp3';
+        else if (alertType === 'streak_reset') soundFile = 'audio/streak_reset.mp3';
 
         const userAudio = new Audio(soundFile);
         userAudio.volume = currentVolume;
-        userAudio.play().catch(() => playSynthesizedTone(alertType));
+        currentActiveAudio = userAudio;
+
+        userAudio.play().then(() => {
+            // Если звук предупреждения (face/posture/pinch) длиннее 1.4 сек — мягко глушим его
+            if (['face', 'pinch', 'posture'].includes(alertType)) {
+                setTimeout(() => {
+                    if (currentActiveAudio === userAudio) {
+                        let curVol = userAudio.volume;
+                        audioFadeInterval = setInterval(() => {
+                            if (curVol > 0.05) {
+                                curVol -= 0.05;
+                                userAudio.volume = Math.max(0, curVol);
+                            } else {
+                                clearInterval(audioFadeInterval);
+                                userAudio.pause();
+                            }
+                        }, 40);
+                    }
+                }, 1200);
+            }
+        }).catch(() => {
+            playSynthesizedTone(alertType);
+        });
     }
 
     function playSynthesizedTone(alertType) {
@@ -729,67 +776,46 @@
     chickGroup.add(spotsContainer);
     const spotSharedMat = new THREE.MeshBasicMaterial({ color: spotColor, side: THREE.DoubleSide });
 
+    // ЧЁТКИЕ ВИДИМЫЕ ПЯТНЫШКИ (1-3 штуки прямо на грудке и боках)
     function generateBodySpots() {
         while (spotsContainer.children.length > 0) {
             spotsContainer.remove(spotsContainer.children[0]);
         }
-        if (!hasSpots) return;
+        if (!hasSpots) {
+            spotsContainer.visible = false;
+            return;
+        }
+        spotsContainer.visible = true;
 
-        // 6 изящных мини-крапинок (уменьшены в 3 раза!)
-        for (let i = 0; i < 6; i++) {
-            const r = 0.44;
-            const theta = (Math.PI * 0.2) + Math.random() * (Math.PI * 1.6);
-            const phi = (Math.random() - 0.45) * 0.6;
+        // 1-3 аккуратные заметные точки
+        const spotCount = 1 + Math.floor(Math.random() * 3);
+        const spotPositions = [
+            { x: -0.22, y: 0.44, z: 0.32 }, // Левая грудка
+            { x: 0.20,  y: 0.46, z: 0.30 }, // Правое крылышко
+            { x: -0.12, y: 0.52, z: 0.34 }  // Верхняя крапинка
+        ];
 
-            // Миниатюрный размер кружочка 0.018 - 0.024
-            const spotDisc = new THREE.Mesh(new THREE.CircleGeometry(0.018 + Math.random() * 0.008, 12), spotSharedMat);
-            const x = r * Math.cos(theta) * Math.cos(phi);
-            const y = 0.38 + r * Math.sin(phi);
-            const z = r * Math.sin(theta) * Math.cos(phi);
-
-            spotDisc.position.set(x, y, z);
-            spotDisc.lookAt(x * 2, y, z * 2);
-            spotsContainer.add(spotDisc);
+        for (let i = 0; i < spotCount; i++) {
+            const p = spotPositions[i];
+            const spotMesh = new THREE.Mesh(new THREE.CircleGeometry(0.038, 16), spotSharedMat);
+            spotMesh.position.set(p.x, p.y, p.z);
+            spotMesh.lookAt(p.x * 2.2, p.y, p.z * 2.2);
+            spotsContainer.add(spotMesh);
         }
     }
     generateBodySpots();
 
-    window.setFeatherColor = function(hex) {
-        if (hex !== '#fde047') {
-            if (grains < 1) { alert('Для смены цвета перьев нужно 1 🌾 зерно! Продержись 2 минуты.'); return; }
-            grains--;
-            localStorage.setItem('pet_grains', grains.toString());
-            updateGrainUI();
-        }
-        applyChickColor(hex);
-        playCustomSound('pet');
-    };
-
-    window.setSpotColor = function(hex) {
-        if (grains < 1) { alert('Для смены цвета пятнышек нужно 1 🌾 зерно!'); return; }
-        grains--;
+    window.cleanAllSpots = function() {
+        if (grains < 3) { alert('Для косметической чистки перьев нужно 3 🌾 зерна пшеницы!'); return; }
+        grains -= 3;
         localStorage.setItem('pet_grains', grains.toString());
         updateGrainUI();
-        spotColor = hex;
-        localStorage.setItem('pet_spot_color', hex);
-        spotSharedMat.color.set(hex);
-        hasSpots = true;
-        localStorage.setItem('pet_has_spots', 'true');
-        document.getElementById('spotsCheck').checked = true;
+        hasSpots = false;
+        localStorage.setItem('pet_has_spots', 'false');
+        document.getElementById('spotsCheck').checked = false;
         generateBodySpots();
         playCustomSound('pet');
-    };
-
-    window.randomizeSpots = function() {
-        if (grains < 1) { alert('Для перемешивания узора нужно 1 🌾 зерно!'); return; }
-        grains--;
-        localStorage.setItem('pet_grains', grains.toString());
-        updateGrainUI();
-        hasSpots = true;
-        localStorage.setItem('pet_has_spots', 'true');
-        document.getElementById('spotsCheck').checked = true;
-        generateBodySpots();
-        playCustomSound('pet');
+        alert('✨ Перышки полностью очищены! Цыпа идеально гладкий.');
     };
 
     let loadedChickScene = null;
@@ -904,7 +930,8 @@
     document.getElementById('spotsCheck').addEventListener('change', (e) => {
         hasSpots = e.target.checked;
         localStorage.setItem('pet_has_spots', hasSpots.toString());
-        sideSpotMesh.visible = hasSpots;
+        spotsContainer.visible = hasSpots;
+        if (hasSpots && spotsContainer.children.length === 0) generateBodySpots();
     });
 
     // Сенсорное вращение и вылупление
@@ -1229,6 +1256,13 @@
             dwellBar.style.width = Math.min(100, (heldDuration / maxDurationMs) * 100) + '%';
             dwellSecondsEl.innerText = (heldDuration / 1000).toFixed(1) + 'с / ' + dwellThresholdSeconds.toFixed(1) + 'с';
 
+            // Предупреждающий тикающий звук за секунду до сгорания жизни
+            if (heldDuration >= 350 && !isAlarming) {
+                const warnType = dangerMessage.includes('Сутулость') ? 'posture' :
+                                 dangerMessage.includes('Щипок') ? 'pinch' : 'face';
+                playWarningPulse(warnType);
+            }
+
             if (heldDuration >= maxDurationMs && !isAlarming) {
                 const dangerType = dangerMessage.includes('Сутулость') ? 'posture' :
                                    dangerMessage.includes('Щипок') || dangerMessage.includes('Ковыряние') ? 'pinch' : 'face';
@@ -1365,8 +1399,13 @@
     let lastSentAlarmState = false;
     let friendPrevLives = 3;
 
+    // ЧИСТЫЙ URL: не спамим хешем в адресную строку при обычном входе
     let urlHash = window.location.hash;
-    let currentRoomCode = '';
+    let currentRoomCode = urlHash.includes('room=') ? urlHash.split('room=')[1].split('&')[0] : ('chick-' + Math.floor(1000 + Math.random() * 9000));
+
+    const fullRoomUrl = `${window.location.origin}${window.location.pathname}#room=${currentRoomCode}`;
+    const roomInput = document.getElementById('roomLinkInput');
+    if (roomInput) roomInput.value = fullRoomUrl;
 
     if (urlHash.includes('room=')) {
         currentRoomCode = urlHash.split('room=')[1].split('&')[0];
@@ -1375,7 +1414,6 @@
         window.location.hash = `room=${currentRoomCode}`;
     }
 
-    const fullRoomUrl = `${window.location.origin}${window.location.pathname}#room=${currentRoomCode}`;
     document.getElementById('roomLinkInput').value = fullRoomUrl;
 
     document.getElementById('copyRoomBtn').addEventListener('click', () => {
@@ -1459,6 +1497,25 @@
 
     let isAiDuelActive = false;
     let aiStreak = 0;
+    // Режим 3: Быстрая игра (Матчмейкинг в открытой комнате)
+    document.getElementById('quickMatchBtn')?.addEventListener('click', () => {
+        const publicRooms = ['chick-arena-1', 'chick-arena-2'];
+        const chosen = publicRooms[Math.floor(Math.random() * publicRooms.length)];
+        const fName = document.getElementById('friendName');
+        if (fName) { fName.className = 'fw-bold text-warning small'; fName.innerText = '⚡ Поиск пары...'; }
+
+        try {
+            const guestPeer = new Peer();
+            guestPeer.on('open', () => {
+                const conn = guestPeer.connect(chosen + '-host');
+                activeConnection = conn;
+                setupPeerConnection(conn);
+                if (fName) fName.innerText = '⚡ Соперник найден! (В сети 🟢)';
+            });
+        } catch(e) {
+            alert('Свободных комнат нет. Создана открытая комната, ждем игрока!');
+        }
+    });
     const startAiDuelBtn = document.getElementById('startAiDuelBtn');
     if (startAiDuelBtn) {
         startAiDuelBtn.addEventListener('click', () => {
@@ -1821,17 +1878,31 @@
         }
     }
 
+    // ТРЕХУРОВНЕВАЯ СИСТЕМА ЗВУКОВ
+    let isWarningBeeping = false;
+    function playWarningPulse(type) {
+        if (isWarningBeeping || isAlarming) return;
+        isWarningBeeping = true;
+        // Разный звук пред-тревоги для каждого режима
+        playCustomSound(type);
+        setTimeout(() => { isWarningBeeping = false; }, 450);
+    }
+
     function triggerChickenAlarm(customText = 'Опусти ручки!', alertType = 'face') {
         isAlarming = true;
-        playCustomSound(alertType);
-        sendSystemNotification('🐥 Цыпа-Дозор Alert', customText);
-
         lives--;
         updateLivesUI();
+
         if (lives > 0) {
+            // Звук 2: Единый звук потери сердечка
+            playCustomSound('life_lost');
+            sendSystemNotification('🐥 Потеряна 1 жизнь!', customText);
             speechBadge.className = 'badge bg-warning text-dark shadow';
             speechBadge.innerText = `⚠️ Осторожно! Осталось: ${lives} ❤️`;
         } else {
+            // Звук 3: Драматичный звук сброса стрика
+            playCustomSound('streak_reset');
+            sendSystemNotification('🚨 Стрик сброшен!', 'Сгорели все 3 жизни. Начни заново!');
             speechBadge.className = 'badge bg-danger shadow';
             speechBadge.innerText = '🚨 ' + customText + ' (Стрик сброшен)';
             secondsStreak = 0;
@@ -1844,7 +1915,7 @@
             isAlarming = false;
             speechBadge.className = 'badge bg-secondary shadow';
             speechBadge.innerText = '👀 Цыпа спокойно присматривает...';
-        }, 3200);
+        }, 3000);
     }
 
     document.getElementById('testAlarmBtn').addEventListener('click', () => {
@@ -1861,6 +1932,56 @@
     });
 
     document.getElementById('windowsNotifCheck').checked = enableWindowsNotifs;
+    // Копирование всех настроек в буфер обмена
+    document.getElementById('copySettingsBtn')?.addEventListener('click', () => {
+        const config = {
+            postureSens: postureSensitivity,
+            volume: currentVolume,
+            dwell: dwellThresholdSeconds,
+            eco: ecoFpsCheck.checked,
+            notifs: enableWindowsNotifs,
+            jitter: localStorage.getItem('pet_jitter_sens') || '2'
+        };
+        navigator.clipboard.writeText(JSON.stringify(config));
+        alert('📋 Настройки скопированы в буфер! Можете вставить их на телефоне или в другом браузере.');
+    });
+
+    // Вставка настроек из буфера
+    document.getElementById('pasteSettingsBtn')?.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            const config = JSON.parse(text);
+            if (config.postureSens) {
+                postureSensitivity = config.postureSens;
+                localStorage.setItem('pet_posture_sens', postureSensitivity.toString());
+                document.getElementById('postureSensRange').value = postureSensitivity;
+                document.getElementById('postureSensValue').innerText = postureSensitivity.toString();
+            }
+            if (config.dwell) {
+                dwellThresholdSeconds = config.dwell;
+                localStorage.setItem('pet_dwell_time', dwellThresholdSeconds.toString());
+                document.getElementById('dwellRange').value = dwellThresholdSeconds;
+                document.getElementById('dwellValue').innerText = dwellThresholdSeconds.toFixed(1) + ' сек';
+            }
+            if (config.volume !== undefined) {
+                currentVolume = config.volume;
+                localStorage.setItem('pet_volume', currentVolume.toString());
+                document.getElementById('volumeRange').value = Math.round(currentVolume * 100);
+                document.getElementById('volumeValue').innerText = Math.round(currentVolume * 100) + '%';
+            }
+            alert('✅ Настройки успешно применены из буфера!');
+        } catch(e) {
+            alert('Не удалось прочитать настройки из буфера обмена.');
+        }
+    });
+
+    // Горячая клавиша [Пробел] для паузы/камеры
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            toggleBtn.click();
+        }
+    });
     document.getElementById('windowsNotifCheck').addEventListener('change', (e) => {
         enableWindowsNotifs = e.target.checked;
         localStorage.setItem('pet_enable_notifs', enableWindowsNotifs.toString());
@@ -1934,9 +2055,11 @@
                 updateGrainUI();
                 playCustomSound('pet');
             }
-            if (secondsStreak > 0 && secondsStreak % 180 === 0 && lives < 3) {
+            // Восстановление жизни ровно каждую минуту (до максимума 3)
+            if (secondsStreak > 0 && secondsStreak % 60 === 0 && lives < 3) {
                 lives++;
                 updateLivesUI();
+                playCustomSound('pet');
             }
             updateStreakUI();
         }
