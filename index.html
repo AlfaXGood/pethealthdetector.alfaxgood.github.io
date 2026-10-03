@@ -48,6 +48,7 @@
                     <div class="fw-bold text-warning d-flex align-items-center gap-1.5" style="font-size: 14px;">
                         <span id="petNameTitle">Цыпа-Дозор</span>
                         <span id="levelBadge" class="badge bg-warning text-dark font-monospace" style="font-size: 10px;">Lv. 1</span>
+                        <span id="headerTitleBadge" class="badge bg-info text-dark font-monospace" style="font-size: 9px;">🐣 Птенец Воли</span>
                         <span id="evoBadge" class="badge bg-danger text-light font-monospace" style="font-size: 9px;">🍎 0</span>
                     </div>
                     <small class="text-secondary" id="hatchHint" style="font-size: 10px;">Кликни — погладить ❤️</small>
@@ -221,8 +222,9 @@
                     </div>
                 </div>
 
-                <div class="text-center border-top border-secondary pt-2">
-                    <button class="btn btn-outline-danger btn-sm px-3 fw-bold" id="leaveDuelBtn">🚪 Покинуть бой</button>
+                <div class="d-flex justify-content-center gap-2 border-top border-secondary pt-2">
+                    <button class="btn btn-outline-info btn-sm px-2.5 fw-bold" id="startAiDuelBtn" title="Если друг оффлайн">🤖 Бой с ИИ-Цыпой (Соло)</button>
+                    <button class="btn btn-outline-danger btn-sm px-2.5 fw-bold" id="leaveDuelBtn">🚪 Покинуть бой</button>
                 </div>
             </div>
         </div>
@@ -258,6 +260,27 @@
                         </div>
                     </div>
                 </div>
+                <div class="p-2 bg-black rounded border border-warning mb-2.5 small">
+                    <div class="p-2.5 bg-black rounded border border-warning mb-2.5 small">
+                        <div class="fw-bold text-warning mb-1">🎖️ Сезонный шкафчик титулов:</div>
+                        <div id="titleBadgeInfo" class="text-info fw-bold mb-1.5" style="font-size: 13px;">Текущий титул: 🐣 Птенец Воли</div>
+                        <div class="text-secondary mb-2" style="font-size: 11px;">
+                            <div>• 0–19 спас.: 🐣 <b>Птенец Воли</b> (Старт пути)</div>
+                            <div>• 20–49 спас.: 🛡️ <b>Страж Осанки</b> (Первый рубеж)</div>
+                            <div>• 50–99 спас.: ⚔️ <b>Несгибаемый Титан</b> (Железный самоконтроль)</div>
+                            <div>• 100+ спас.: 👑 <b>Мастер Осознанности</b> (Высшая лига)</div>
+                        </div>
+
+                        <!-- Памятка: Зачем кормить и что за яблоки -->
+                        <div class="border-top border-secondary pt-2 text-light" style="font-size: 11px;">
+                            <div class="text-warning fw-bold mb-0.5">🌾 Зачем нужна Пшеница:</div>
+                            <div class="text-secondary mb-1.5">Даётся за каждые 2 мин чистой осанки. Кормите цыпу для прокачки уровня Lv., а также покупайте скины, смену цвета и новые яйца.</div>
+
+                            <div class="text-danger fw-bold mb-0.5">🍎 Зачем нужны Эво-Яблоки:</div>
+                            <div class="text-secondary">Главная награда за победу в 15-минутном бое. Каждое яблоко увеличивает цыплёнка в размерах, открывает золотые перья и ауру вокруг гнезда!</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="p-2 bg-dark rounded border border-secondary small">
                     <div class="fw-bold text-warning mb-1">🌟 Стадии эволюции (Макс. +30% к размеру):</div>
                     <div>• <b>Lv. 1 Малыш</b>: Базовый цыплёнок из скорлупы.</div>
@@ -281,7 +304,7 @@
             <div class="modal-body p-3">
                 <!-- Окрас перьев -->
                 <div class="mb-3">
-                    <label class="form-label text-warning small fw-bold mb-1">Цвет перьев цыплёнка:</label>
+                    <label class="form-label text-warning small fw-bold mb-1">Цвет перьев цыплёнка (1 🌾 зерно, базовый жёлтый — 0 🌾):</label>
                     <div class="d-flex gap-2 align-items-center">
                         <span class="color-dot" style="background-color: #fde047;" onclick="setFeatherColor('#fde047')" title="Золотой"></span>
                         <span class="color-dot" style="background-color: #f472b6;" onclick="setFeatherColor('#f472b6')" title="Сакура Розовый"></span>
@@ -302,15 +325,15 @@
                     </div>
                     <small class="text-secondary d-block mb-1.5" style="font-size: 11px;">Случайные пятнышки на крылышках и перьях:</small>
                     <div class="d-flex gap-1.5 flex-wrap">
-                        <button class="btn btn-sm btn-outline-warning py-0 px-2" style="font-size: 10px;" onclick="randomizeSpots()">🎲 Перемешать</button>
-                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#78350f')">Шоколад</button>
-                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ffffff')">Белый</button>
-                        <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 10px;" onclick="setSpotColor('#ea580c')">Оранж</button>
+                        <button class="btn btn-sm btn-outline-warning py-0.5 px-2" style="font-size: 10px;" onclick="randomizeSpots()">🎲 Перемешать (1 🌾)</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0.5 px-2" style="font-size: 10px;" onclick="setSpotColor('#78350f')">Шоколад (1 🌾)</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0.5 px-2" style="font-size: 10px;" onclick="setSpotColor('#ffffff')">Белый (1 🌾)</button>
+                        <button class="btn btn-sm btn-outline-secondary py-0.5 px-2" style="font-size: 10px;" onclick="setSpotColor('#ea580c')">Оранж (1 🌾)</button>
                     </div>
                 </div>
 
                 <div class="d-grid mb-3">
-                    <button class="btn btn-outline-warning btn-sm fw-bold" id="reHatchBtn">🥚 Разбить новое случайное яйцо</button>
+                    <button class="btn btn-outline-warning btn-sm fw-bold py-1" id="reHatchBtn">🥚 Разбить новое случайное яйцо (2 🌾)</button>
                 </div>
 
                 <small class="text-secondary d-block mb-1.5 fw-bold">Гардероб (Купленное сохраняется навсегда):</small>
@@ -607,14 +630,14 @@
     strawInside.position.y = 0.03;
     worldGroup.add(strawInside);
 
-    // Ромашки
+    // Ромашки (12 цветов вокруг гнезда на полянке)
     function createFlower(x, z, scale = 1) {
         const flowerGroup = new THREE.Group();
         flowerGroup.position.set(x, 0.01, z);
         flowerGroup.scale.set(scale, scale, scale);
-        const center = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.03, 12), new THREE.MeshToonMaterial({ color: 0xfacc15 }));
+        const center = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.025, 12), new THREE.MeshToonMaterial({ color: 0xfacc15 }));
         flowerGroup.add(center);
-        const petalGeo = new THREE.BoxGeometry(0.04, 0.02, 0.12);
+        const petalGeo = new THREE.BoxGeometry(0.035, 0.015, 0.10);
         const petalMat = new THREE.MeshToonMaterial({ color: 0xffffff });
         for (let i = 0; i < 5; i++) {
             const petal = new THREE.Mesh(petalGeo, petalMat);
@@ -623,9 +646,13 @@
         }
         worldGroup.add(flowerGroup);
     }
-    createFlower(1.05, 0.45, 1.1);
-    createFlower(-1.15, 0.35, 0.9);
-    createFlower(0.85, -0.65, 0.85);
+
+    // Рассаживаем 12 ромашек по кругу поляны
+    for (let i = 0; i < 12; i++) {
+        const ang = (i / 12) * Math.PI * 2;
+        const dist = 0.95 + (i % 3) * 0.28;
+        createFlower(Math.cos(ang) * dist, Math.sin(ang) * dist, 0.75 + (i % 2) * 0.3);
+    }
 
     // Светлячки
     const fireflyCount = 28;
@@ -708,25 +735,41 @@
         }
         if (!hasSpots) return;
 
-        // Генерируем 5 аккуратных пятнышек в случайных точках тела
-        for (let i = 0; i < 5; i++) {
-            const r = 0.44; // радиус тела цыпы
-            const theta = (Math.PI * 0.25) + Math.random() * (Math.PI * 1.5); // бока, крылья и спинка
-            const phi = (Math.random() - 0.45) * 0.7; // высота по телу
+        // 6 изящных мини-крапинок (уменьшены в 3 раза!)
+        for (let i = 0; i < 6; i++) {
+            const r = 0.44;
+            const theta = (Math.PI * 0.2) + Math.random() * (Math.PI * 1.6);
+            const phi = (Math.random() - 0.45) * 0.6;
 
-            const spotDisc = new THREE.Mesh(new THREE.CircleGeometry(0.045 + Math.random() * 0.03, 12), spotSharedMat);
+            // Миниатюрный размер кружочка 0.018 - 0.024
+            const spotDisc = new THREE.Mesh(new THREE.CircleGeometry(0.018 + Math.random() * 0.008, 12), spotSharedMat);
             const x = r * Math.cos(theta) * Math.cos(phi);
             const y = 0.38 + r * Math.sin(phi);
             const z = r * Math.sin(theta) * Math.cos(phi);
 
             spotDisc.position.set(x, y, z);
-            spotDisc.lookAt(x * 2, y, z * 2); // разворот наружу перпендикулярно перьям
+            spotDisc.lookAt(x * 2, y, z * 2);
             spotsContainer.add(spotDisc);
         }
     }
     generateBodySpots();
 
+    window.setFeatherColor = function(hex) {
+        if (hex !== '#fde047') {
+            if (grains < 1) { alert('Для смены цвета перьев нужно 1 🌾 зерно! Продержись 2 минуты.'); return; }
+            grains--;
+            localStorage.setItem('pet_grains', grains.toString());
+            updateGrainUI();
+        }
+        applyChickColor(hex);
+        playCustomSound('pet');
+    };
+
     window.setSpotColor = function(hex) {
+        if (grains < 1) { alert('Для смены цвета пятнышек нужно 1 🌾 зерно!'); return; }
+        grains--;
+        localStorage.setItem('pet_grains', grains.toString());
+        updateGrainUI();
         spotColor = hex;
         localStorage.setItem('pet_spot_color', hex);
         spotSharedMat.color.set(hex);
@@ -734,13 +777,19 @@
         localStorage.setItem('pet_has_spots', 'true');
         document.getElementById('spotsCheck').checked = true;
         generateBodySpots();
+        playCustomSound('pet');
     };
 
     window.randomizeSpots = function() {
+        if (grains < 1) { alert('Для перемешивания узора нужно 1 🌾 зерно!'); return; }
+        grains--;
+        localStorage.setItem('pet_grains', grains.toString());
+        updateGrainUI();
         hasSpots = true;
         localStorage.setItem('pet_has_spots', 'true');
         document.getElementById('spotsCheck').checked = true;
         generateBodySpots();
+        playCustomSound('pet');
     };
 
     let loadedChickScene = null;
@@ -1408,6 +1457,40 @@
         });
     }
 
+    let isAiDuelActive = false;
+    let aiStreak = 0;
+    const startAiDuelBtn = document.getElementById('startAiDuelBtn');
+    if (startAiDuelBtn) {
+        startAiDuelBtn.addEventListener('click', () => {
+            isAiDuelActive = true;
+            aiStreak = 0;
+            const fName = document.getElementById('friendName');
+            if (fName) { fName.className = 'fw-bold text-warning small'; fName.innerText = '🤖 ИИ-Цыпа (Соперник)'; }
+            document.getElementById('friendDuelLives').innerText = '❤️❤️❤️';
+            document.getElementById('friendAvatarIcon').innerText = '🤖';
+            alert('Бой с ИИ запущен! Кто первый продержится 15:00 — забирает яблоко 🍎');
+        });
+    }
+
+    // ИИ-Цыпа тоже держит стрик, но иногда может сбиться
+    setInterval(() => {
+        if (isAiDuelActive) {
+            aiStreak++;
+            const m = Math.floor(aiStreak / 60).toString().padStart(2, '0');
+            const s = (aiStreak % 60).toString().padStart(2, '0');
+            const fScore = document.getElementById('friendDuelScore');
+            if (fScore) fScore.innerText = `${m}:${s} / 15:00`;
+            const fProgBar = document.getElementById('friendDuelProgress');
+            if (fProgBar) fProgBar.style.width = Math.min(100, (aiStreak / 900) * 100) + '%';
+
+            if (aiStreak >= 900) {
+                alert('🤖 ИИ-Цыпа первым выдержал 15 минут! Тренируйся лучше.');
+                aiStreak = 0;
+                isAiDuelActive = false;
+            }
+        }
+    }, 1000);
+
     // 🎧 3D НАУШНИКИ В СЦЕНЕ THREE.JS
     let headsetNode = new THREE.Group();
     const bandMesh = new THREE.Mesh(new THREE.TorusGeometry(0.24, 0.03, 8, 24, Math.PI), new THREE.MeshToonMaterial({ color: 0xef4444 }));
@@ -1595,10 +1678,24 @@
     let preventedCount = parseInt(localStorage.getItem('pet_prevented_count') || '0', 10);
     let lives = 3;
 
+    function calculateTitle(count) {
+        if (count >= 100) return '👑 Мастер Осознанности';
+        if (count >= 50) return '⚔️ Несгибаемый Титан';
+        if (count >= 20) return '🛡️ Страж Осанки';
+        return '🐣 Птенец Воли';
+    }
+
     function updatePreventedUI() {
         document.getElementById('preventedBadge').innerText = `🛡️ ${preventedCount} спас.`;
         document.getElementById('statSavedCount').innerText = preventedCount.toString();
         document.getElementById('statFruitsCount').innerText = evoFruits.toString();
+
+        // Автоматическое обновление титула по количеству спасенных ранок
+        const currentTitle = calculateTitle(preventedCount);
+        const titleBadgeInfo = document.getElementById('titleBadgeInfo');
+        if (titleBadgeInfo) titleBadgeInfo.innerText = `Текущий титул: ${currentTitle}`;
+        const headerTitleBadge = document.getElementById('headerTitleBadge');
+        if (headerTitleBadge) headerTitleBadge.innerText = currentTitle;
     }
     function updateGrainUI() {
         document.getElementById('grainCount').innerText = grains.toString();
@@ -1830,6 +1927,7 @@
     setInterval(() => {
         if (isCameraRunning && !isAlarming) {
             secondsStreak++;
+            checkDuelVictory(); // Проверка победы на 15 минут (900 сек)
             if (secondsStreak > 0 && secondsStreak % 120 === 0) {
                 grains++;
                 localStorage.setItem('pet_grains', grains.toString());
