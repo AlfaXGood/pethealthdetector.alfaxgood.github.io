@@ -323,6 +323,9 @@
                 <div class="p-2.5 mb-3 bg-black rounded border border-secondary">
                     <div class="d-flex justify-content-between align-items-center mb-1.5">
                         <span class="fw-bold small text-warning">🎨 Пятнышки по телу:</span>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="spotsCheck" checked>
+                        </div>
                     </div>
                     <small class="text-secondary d-block mb-1.5" style="font-size: 11px;">Случайные пятнышки на крылышках и перьях:</small>
                     <div class="d-flex gap-1.5 flex-wrap">
@@ -926,13 +929,16 @@
         bootstrap.Modal.getInstance(document.getElementById('wardrobeModal'))?.hide();
     });
 
-    document.getElementById('spotsCheck').checked = hasSpots;
-    document.getElementById('spotsCheck').addEventListener('change', (e) => {
-        hasSpots = e.target.checked;
-        localStorage.setItem('pet_has_spots', hasSpots.toString());
-        spotsContainer.visible = hasSpots;
-        if (hasSpots && spotsContainer.children.length === 0) generateBodySpots();
-    });
+    const spotsCheckEl = document.getElementById('spotsCheck');
+    if (spotsCheckEl) {
+        spotsCheckEl.checked = hasSpots;
+        spotsCheckEl.addEventListener('change', (e) => {
+            hasSpots = e.target.checked;
+            localStorage.setItem('pet_has_spots', hasSpots.toString());
+            spotsContainer.visible = hasSpots;
+            if (hasSpots && spotsContainer.children.length === 0) generateBodySpots();
+        });
+    }
 
     // Сенсорное вращение и вылупление
     let isDragging = false, prevPointerX = 0, dragDistance = 0;
@@ -1931,7 +1937,8 @@
         }, 2500);
     });
 
-    document.getElementById('windowsNotifCheck').checked = enableWindowsNotifs;
+    const winNotifEl = document.getElementById('windowsNotifCheck');
+    if (winNotifEl) winNotifEl.checked = enableWindowsNotifs;
     // Копирование всех настроек в буфер обмена
     document.getElementById('copySettingsBtn')?.addEventListener('click', () => {
         const config = {
